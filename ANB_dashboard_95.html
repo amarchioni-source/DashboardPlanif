@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANB Planificación Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;color:#1a1a2e;font-size:13px}
+.hdr{background:linear-gradient(135deg,#0d0d0d 0%,#1a1a1a 60%,#251a08 100%);padding:14px 24px;color:#fff;display:flex;align-items:center;gap:16px;border-bottom:3px solid #c8a84b;position:relative;min-height:56px}
+.hdr h1{font-size:15px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff}
+.hdr p{font-size:9px;opacity:.55;letter-spacing:1.5px;text-transform:uppercase;color:#c8a84b}
+.hdr::after{content:"AZUL NATURAL BEEF";position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:9px;letter-spacing:4px;color:#c8a84b;font-weight:700;text-transform:uppercase}
+.snav{background:#111;padding:6px 18px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;border-bottom:1px solid #2a2a2a}
+.snl{font-size:9px;color:#c8a84b;text-transform:uppercase;letter-spacing:1px;margin-right:4px;font-weight:700}
+.sp{padding:4px 12px;border-radius:20px;border:1px solid #333;cursor:pointer;font-size:11px;font-weight:500;color:#aaa;background:none;transition:all .15s;white-space:nowrap}
+.sp:hover{border-color:#c8a84b;color:#c8a84b}
+.sp.on{background:#c8a84b;border-color:#c8a84b;color:#000;font-weight:700}
+.sp.con{background:#1a5276;border-color:#1a5276;color:#fff}
+.layout{display:flex;height:calc(100vh - 200px);min-height:500px}
+.sb{width:230px;flex-shrink:0;background:#fff;border-right:1px solid #dde3ea;display:flex;flex-direction:column}
+.sbh{padding:10px 12px;border-bottom:1px solid #e1e8ef;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:#f8fafc}
+.sbt{font-size:12px;font-weight:600;color:#1a3a5c}.sbn{background:#1a3a5c;color:#8ab4d4;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.mbfrow{padding:6px 10px;border-bottom:1px solid #e1e8ef;display:flex;gap:4px;align-items:center;flex-shrink:0;background:#f8fafc}
+.mbt{padding:3px 10px;border-radius:12px;border:1px solid #c8d8e8;cursor:pointer;font-size:10px;font-weight:600;color:#666;background:#fff}
+.mbt.on{color:#fff;border-color:transparent}
+.sbs{padding:6px 10px;border-bottom:1px solid #e1e8ef;flex-shrink:0}
+.sbs input{width:100%;font-size:11px;padding:5px 8px;border:1px solid #c8d8e8;border-radius:6px;background:#fff;color:#333;outline:none}
+.sbs input:focus{border-color:#1a5276}
+.sbl{overflow-y:auto;flex:1}
+.gi{padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f4f8;transition:background .1s}
+.gi:hover{background:#f0f7ff}
+.gi.on{background:#deeaf8;border-left:3px solid #1a3a5c}
+.gi.con{background:#deeaf8;border-left:3px solid #1a5276}
+.gi.cong-row{border-left:3px solid #1a3a5c}
+.gin{font-size:11px;font-weight:600;margin-bottom:3px;color:#1a2a3a}
+.gim{font-size:10px;color:#666;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.gib{height:4px;background:#e8eef4;border-radius:2px;overflow:hidden;margin-top:4px}
+.gibf{height:100%;border-radius:2px}
+.sbadge{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;color:#fff}
+.main{flex:1;overflow-y:auto;padding:16px;background:#f4f6f9}
+.kr{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:#fff;border:1px solid #e1e8ef;border-radius:9px;padding:11px 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.kn{font-size:25px;font-weight:800;line-height:1;margin-bottom:4px;font-feature-settings:'tnum' 1;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}.kl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.6px;font-weight:600}.u{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#c8a84b;text-transform:uppercase}
+.lg{display:flex;gap:12px;flex-wrap:wrap;padding:7px 12px;background:#fff;border:1px solid #e1e8ef;border-radius:8px;margin-bottom:12px}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:#555}
+.ld{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.sc{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e1e8ef}
+.og{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:8px}
+.oc{background:#fff;border:1px solid #e1e8ef;border-radius:9px;padding:12px;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.oc:hover{border-color:#1a5276;box-shadow:0 2px 8px rgba(26,82,118,.15);transform:translateY(-1px)}
+.ocn{font-size:12px;font-weight:600;margin-bottom:4px;color:#1a2a3a}
+.ocm{font-size:10px;color:#888;margin-bottom:7px}
+.mwg{display:flex;flex-wrap:wrap;gap:2px}
+.mw{width:12px;height:10px;border-radius:2px}
+.wr{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:12px}
+.wc{width:30px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;cursor:default;flex-shrink:0;color:#fff}
+.wc:hover{transform:scale(1.15);z-index:20}
+.bk{border:none;background:none;cursor:pointer;color:#555;font-size:12px;padding:0 0 10px;display:flex;align-items:center;gap:5px;font-weight:500}
+.bk:hover{color:#1a3a5c}
+.dc{background:#fff;border:1px solid #e1e8ef;border-radius:9px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.dn{font-size:15px;font-weight:700;margin-bottom:4px;color:#1a2a3a}
+.ds{font-size:11px;color:#888;margin-bottom:12px}
+.wdr{display:flex;align-items:flex-start;gap:6px;padding:5px 6px;border-bottom:1px solid #f0f4f8}
+.wdr:last-child{border:none}
+.wds{font-weight:700;width:27px;color:#888;flex-shrink:0;font-size:10px;padding-top:3px}
+.wdp{font-size:10px;color:#aaa;width:65px;flex-shrink:0;padding-top:3px}
+.wde{display:flex;gap:4px;flex-wrap:wrap}
+.ep{display:flex;align-items:center;gap:3px;padding:3px 7px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+.mb-tag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:8px}
+.cc{background:#fff;border:1px solid #e1e8ef;border-radius:9px;padding:12px;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.cc:hover{border-color:#1a5276;box-shadow:0 2px 8px rgba(26,82,118,.15);transform:translateY(-1px)}
+.cc.on{border:2px solid #1a5276}
+.cc.cong-card{border-left:4px solid #1a3a5c}
+.ccn{font-size:11px;font-weight:700;margin-bottom:2px;color:#1a2a3a;line-height:1.3}
+.ccp{font-size:10px;color:#888;margin-bottom:5px}
+.cck{font-size:18px;font-weight:700;color:#1a5276;margin-bottom:4px}
+.prc{border:1px solid #e1e8ef;border-radius:8px;margin-bottom:7px;overflow:hidden;background:#fff}
+.prh{padding:10px 12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .1s}
+.prh:hover{background:#f0f7ff}
+.prn{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;color:#1a2a3a;flex-wrap:wrap}
+.prmeta{font-size:11px;color:#888;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.prbody{padding:12px 14px;border-top:1px solid #e1e8ef;background:#f8fafc}
+.sol-hdr{display:flex;align-items:center;gap:8px;margin:12px 0 6px}
+.sol-badge{font-size:9px;font-weight:800;padding:3px 9px;border-radius:10px;color:#fff}
+.cwc{width:26px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+
+/* ===== MOVIL (no toca el escritorio) ===== */
+@media (max-width:760px){
+  body{font-size:14px}
+  .hdr{padding:10px 14px;min-height:auto;flex-wrap:wrap;gap:6px}
+  .hdr h1{font-size:13px;letter-spacing:1.5px}
+  .hdr::after{display:none}
+  #ticker{padding:4px 10px}
+  .snav{padding:8px 10px;gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .sp{padding:7px 13px;font-size:13px;flex-shrink:0}
+  .snl{flex-shrink:0}
+  /* sidebar arriba, contenido abajo */
+  .layout{flex-direction:column;height:auto;min-height:0}
+  .sb{width:100%;max-height:42vh;border-right:none;border-bottom:2px solid #dde3ea}
+  .sbl{max-height:30vh}
+  .main{padding:12px 10px;overflow-y:visible}
+  /* tarjetas y grillas */
+  .kr{grid-template-columns:repeat(2,1fr)}
+  .kn{font-size:21px}
+  .og,.cg{grid-template-columns:1fr 1fr}
+  /* tablas y grilla de semanas: scroll horizontal con el dedo */
+  .main table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}
+  /* botones/areas tocables mas comodos */
+  .gi{padding:11px 12px}
+  .mbt{padding:6px 12px;font-size:12px}
+}
+@media (max-width:430px){
+  .kr{grid-template-columns:1fr 1fr}
+  .og,.cg{grid-template-columns:1fr}
+  .hdr p{display:none}
+}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <h1>ANB · Planificación</h1>
+  <p id="hdr-sub">Solapas &nbsp;·&nbsp; Clientes &nbsp;·&nbsp; <span id="hdr-weeks">—</span></p>
+</div>
+<div id="sticky-top" style="position:sticky;top:0;z-index:200;background:#0a0a0a">
+<div id="ticker" style="background:#0a0a0a;border-bottom:1px solid #222;padding:4px 18px;display:flex;gap:12px;align-items:center;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;min-height:26px">
+  <span style="font-size:9px;letter-spacing:2px;color:#c8a84b;font-weight:700;text-transform:uppercase;flex-shrink:0">COTIZACIONES</span>
+  <div id="ticker-items" style="display:flex;gap:10px;flex-wrap:nowrap;align-items:center;flex:1">
+    <span style="font-size:10px;color:#555">Cargando...</span>
+  </div>
+  <span id="ticker-time" style="font-size:9px;color:#444;margin-left:auto;flex-shrink:0"></span>
+</div>
+
+<script>
+(function loadRates(){
+  const items = document.getElementById('ticker-items');
+  const timeEl = document.getElementById('ticker-time');
+  if(!items) return;
+
+  // Color helper
+  function rateEl(label, val, flag, decimals=2){
+    return `<span style="display:flex;align-items:center;gap:4px">
+      <span style="font-size:12px">${flag}</span>
+      <span style="font-size:9px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.5px">${label}</span>
+      <span style="font-size:11px;font-weight:700;color:#e8e0cc">${val}</span>
+    </span>`;
+  }
+
+  function fmt(n, dec=2){ return n ? parseFloat(n).toLocaleString('es-AR',{minimumFractionDigits:dec,maximumFractionDigits:dec}) : '—'; }
+
+  // Elemento con compra/venta (para la tabla de billetes BNA)
+  function cvEl(label, compra, venta, flag){
+    return `<span style="display:flex;align-items:center;gap:4px">
+      <span style="font-size:12px">${flag}</span>
+      <span style="font-size:9px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.5px">${label}</span>
+      <span style="font-size:9px;color:#6f9f6f;font-weight:700">C</span><span style="font-size:11px;font-weight:700;color:#cfe6cf">${compra}</span>
+      <span style="font-size:9px;color:#b08a4a;font-weight:700">V</span><span style="font-size:11px;font-weight:700;color:#e8e0cc">${venta}</span>
+    </span>`;
+  }
+
+  async function fetchAll(){
+    let out = '';
+    const sep = '<span style="color:#333;margin:0 4px">·</span>';
+
+    try {
+      // Tipos de cambio internacionales
+      const r1 = await fetch('https://open.er-api.com/v6/latest/USD');
+      const d1 = await r1.json();
+      const rates = d1.rates || {};
+
+      // Cotizaciones ARG via dolarapi.com (blue, mep, turista, cripto, mayorista=divisa BNA, oficial de respaldo)
+      let blue='—', mep='—', turista='—', cripto='—', ofC='—', ofV='—', mayC='—', mayV='—';
+      try {
+        const r2 = await fetch('https://dolarapi.com/v1/dolares');
+        const d2 = await r2.json();
+        for(const d of d2){
+          const n = (d.nombre||d.casa||'').toLowerCase();
+          if(n.includes('blue'))    blue    = '$ '+fmt(d.venta,0);
+          if(n.includes('oficial')){ ofC='$ '+fmt(d.compra,0); ofV='$ '+fmt(d.venta,0); }
+          if(n.includes('mayorista')){ mayC='$ '+fmt(d.compra,0); mayV='$ '+fmt(d.venta,0); }
+          if(n.includes('bolsa')||n.includes('mep')) mep = '$ '+fmt(d.venta,0);
+          if(n.includes('tarjeta')||n.includes('turista')) turista = '$ '+fmt(d.venta,0);
+          if(n.includes('cripto')) cripto  = '$ '+fmt(d.venta,0);
+        }
+      } catch(e2){}
+
+      // BNA — Cotización Billetes. Dólar exacto desde bna.com.ar (scraping); Euro y Real oficiales (dolarapi).
+      let usdC='—', usdV='—', eurC='—', eurV='—', realC='—', realV='—', bnaHora='';
+      try {
+        const rb = await fetch('https://dolar-bna.vercel.app/api/cotizacion');
+        const db = await rb.json();
+        if(db && db.venta){ usdC='$ '+fmt(db.compra,0); usdV='$ '+fmt(db.venta,0); }
+      } catch(eb){}
+      if(usdV==='—'){ usdC=ofC; usdV=ofV; }   // respaldo: oficial dolarapi
+      try {
+        const re = await fetch('https://dolarapi.com/v1/cotizaciones/eur');
+        const de = await re.json();
+        if(de && de.venta){ eurC='$ '+fmt(de.compra,0); eurV='$ '+fmt(de.venta,0);
+          if(de.fechaActualizacion) bnaHora=new Date(de.fechaActualizacion).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); }
+      } catch(ee){}
+      try {
+        const rr = await fetch('https://dolarapi.com/v1/cotizaciones/brl');
+        const dr = await rr.json();
+        if(dr && dr.venta){ realC='$ '+fmt(dr.compra,0); realV='$ '+fmt(dr.venta,0); }
+      } catch(er){}
+
+      // Bitcoin via CoinGecko
+      let btc = '—';
+      try {
+        const r3 = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const d3 = await r3.json();
+        btc = 'U$S '+parseInt(d3.bitcoin?.usd||0).toLocaleString('es-AR');
+      } catch(e3){}
+
+      // Armar ticker — BNA Divisas (dólar = mayorista) primero, luego Billetes
+      out += `<span style="font-size:9px;color:#c8a84b;font-weight:700;letter-spacing:1px">🏦 BNA · DIVISAS</span>` + sep;
+      out += cvEl('Dólar', mayC, mayV, '🇺🇸') + sep;
+      out += `<span style="font-size:9px;color:#c8a84b;font-weight:700;letter-spacing:1px">🏦 BNA · BILLETES${bnaHora?` <span style="opacity:.6;font-weight:600">${bnaHora}</span>`:''}</span>` + sep;
+      out += cvEl('Dólar', usdC, usdV, '🇺🇸') + sep;
+      out += cvEl('Euro', eurC, eurV, '🇪🇺') + sep;
+      out += cvEl('Real', realC, realV, '🇧🇷') + sep;
+      out += '<span style="font-size:9px;color:#c8a84b;font-weight:700;letter-spacing:1px">📈 MERCADO</span>' + sep;
+      out += rateEl('Blue', blue, '💵') + sep;
+      out += rateEl('MEP', mep, '📊') + sep;
+      out += rateEl('Turista', turista, '✈️') + sep;
+      out += rateEl('Cripto', cripto, '💻') + sep;
+      out += rateEl('BTC', btc, '₿') + sep;
+      out += '<span style="font-size:9px;color:#c8a84b;font-weight:700;letter-spacing:1px">🌍 INTL</span>' + sep;
+      const eur = rates.EUR ? fmt(1/rates.EUR) : '—';
+      out += rateEl('EUR', eur, '🇪🇺') + sep;
+      out += rateEl('BRL', fmt(rates.BRL), '🇧🇷') + sep;
+      out += rateEl('CNY', fmt(rates.CNY), '🇨🇳') + sep;
+      out += rateEl('CLP', fmt(rates.CLP,0), '🇨🇱') + sep;
+      out += rateEl('MYR', fmt(rates.MYR), '🇲🇾') + sep;
+      out += rateEl('PEN', fmt(rates.PEN), '🇵🇪');
+
+    } catch(e){
+      out = '<span style="font-size:10px;color:#c0392b">⚠ Error: '+e.message+'</span>';
+    }
+
+    items.innerHTML = out;
+    const now = new Date();
+    timeEl.textContent = 'Actualizado ' + now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  fetchAll();
+  setInterval(fetchAll, 5 * 60 * 1000); // refresh cada 5 min
+})();
+</script>
+
+<div style="width:100%;height:90px;background:linear-gradient(180deg,#0d0d0d 0%,#1a1510 30%,#2a2218 60%,#1a1510 80%,#0d0d0d 100%);position:relative;overflow:hidden;flex-shrink:0">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 120% 200% at 50% 50%,rgba(40,30,15,.0) 0%,rgba(10,8,4,.5) 100%);mix-blend-mode:multiply"></div>
+  <div style="position:absolute;inset:0;opacity:.08;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.03) 2px,rgba(255,255,255,.03) 4px),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(255,255,255,.02) 3px,rgba(255,255,255,.02) 6px)"></div>
+  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:32px">
+    <div style="text-align:center">
+      <div style="font-size:9px;letter-spacing:5px;color:#c8a84b;font-weight:700;text-transform:uppercase;opacity:.9">DEVESA</div>
+      <div style="font-size:7px;letter-spacing:2px;color:#888;text-transform:uppercase;margin-top:2px">Argentine Beef</div>
+    </div>
+    <div style="width:1px;height:40px;background:linear-gradient(180deg,transparent,#c8a84b,transparent)"></div>
+    <div style="text-align:center">
+      <div style="font-size:20px;font-weight:900;letter-spacing:6px;color:#fff;text-transform:uppercase;line-height:1">ANB</div>
+      <div style="font-size:7px;letter-spacing:2px;color:#c8a84b;text-transform:uppercase;margin-top:3px">Argentine Beef</div>
+    </div>
+    <div style="width:1px;height:40px;background:linear-gradient(180deg,transparent,#c8a84b,transparent)"></div>
+    <div style="text-align:center">
+      <div style="font-size:9px;letter-spacing:4px;color:#c8a84b;font-weight:700;text-transform:uppercase;opacity:.9">AZUL</div>
+      <div style="font-size:7px;letter-spacing:2px;color:#888;text-transform:uppercase;margin-top:2px">Natural Beef</div>
+    </div>
+  </div>
+</div>
+<div class="snav" id="snav"></div>
+</div>
+<div class="layout">
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+// ANB Planificación — DATOS (generado desde el Excel del día: _95)
+// Solo datos. El diseño y la lógica viven en index.html.
+const SOL = {"ASADO": {"g": {"G SHORT RIBS 7C": {"w": {"W32": {"p": 28999, "e": [{"p": "UNITED STATES", "c": "Worldclass.com LLC", "t": "V", "kg": 650, "f": "US"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 492, "f": "MX"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 27858, "f": "MY"}]}, "W33": {"p": 27994, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 492, "f": "MX"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 18724, "f": "MY"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 8779, "f": "CN"}]}, "W34": {"p": 22252, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 22252, "f": "CN"}]}, "W35": {"p": 27994, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 27994, "f": "CN"}]}, "W36": {"p": 27994, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 492, "f": "MX"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 27503, "f": "CN"}]}, "W37": {"p": 27994, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 492, "f": "MX"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 27503, "f": "CN"}]}, "W38": {"p": 27994, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 14858, "f": "CN"}]}, "W39": {"p": 28353, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 492, "f": "MX"}]}, "W40": {"p": 28712, "e": []}, "W41": {"p": 27994, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 492, "f": "MX"}]}, "W42": {"p": 22252, "e": []}, "W43": {"p": 27994, "e": []}, "W44": {"p": 27994, "e": []}, "W45": {"p": 27994, "e": []}, "W46": {"p": 27994, "e": []}, "W47": {"p": 27994, "e": []}, "W48": {"p": 22252, "e": []}, "W49": {"p": 27994, "e": []}}, "lv": "W41", "kgu": 3.589, "mb": "MB1"}, "G TOP PLATE": {"w": {"W32": {"p": 9756, "e": [{"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 562, "f": "PH"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 9194, "f": "CN"}]}, "W33": {"p": 7800, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 7800, "f": "CN"}]}, "W34": {"p": 6200, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 6200, "f": "CN"}]}, "W35": {"p": 7800, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 7800, "f": "CN"}]}, "W36": {"p": 7800, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 7800, "f": "CN"}]}, "W37": {"p": 7800, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 964, "f": "CN"}]}, "W38": {"p": 7800, "e": []}, "W39": {"p": 7900, "e": []}, "W40": {"p": 8000, "e": []}, "W41": {"p": 7800, "e": []}, "W42": {"p": 6200, "e": []}, "W43": {"p": 7800, "e": []}, "W44": {"p": 7800, "e": []}, "W45": {"p": 7800, "e": []}, "W46": {"p": 7800, "e": []}, "W47": {"p": 7800, "e": []}, "W48": {"p": 6200, "e": []}, "W49": {"p": 7800, "e": []}}, "lv": "W37", "kgu": 1.0, "mb": "MB1"}, "G ENTRAÑA FINA": {"w": {"W32": {"p": 3513, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 520, "f": "CL"}, {"p": "UNITED STATES", "c": "Worldclass.com LLC", "t": "V", "kg": 1158, "f": "US"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 300, "f": ""}, {"p": "SINGAPORE", "c": "INDOGUNA", "t": "V", "kg": 20, "f": "SG"}, {"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 221, "f": "PH"}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 1246, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 29, "f": "CN"}]}, "W33": {"p": 4072, "e": [{"p": "UNITED STATES", "c": "Worldclass.com LLC", "t": "V", "kg": 1600, "f": "US"}, {"p": "VIETNAM", "c": "FOOD SOURCE INTERNATIO", "t": "V", "kg": 250, "f": "VN"}]}, "W34": {"p": 3236, "e": [{"p": "UNITED STATES", "c": "Worldclass.com LLC", "t": "V", "kg": 1600, "f": "US"}, {"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 500, "f": "BR"}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 1137, "f": "PE"}]}, "W35": {"p": 4072, "e": [{"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 863, "f": "PE"}, {"p": "", "c": "USA WC", "t": "R", "kg": 2000, "f": ""}]}, "W36": {"p": 4072, "e": [{"p": "", "c": "USA WC", "t": "R", "kg": 1000, "f": ""}]}, "W37": {"p": 4072, "e": [{"p": "", "c": "USA WC", "t": "R", "kg": 1000, "f": ""}]}, "W38": {"p": 4072, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 500, "f": "BR"}, {"p": "", "c": "USA WC", "t": "R", "kg": 1000, "f": ""}]}, "W39": {"p": 4124, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 520, "f": "CL"}, {"p": "", "c": "USA WC", "t": "R", "kg": 1000, "f": ""}]}, "W40": {"p": 4176, "e": []}, "W41": {"p": 4072, "e": []}, "W42": {"p": 3236, "e": []}, "W43": {"p": 4072, "e": []}, "W44": {"p": 4072, "e": []}, "W45": {"p": 4072, "e": []}, "W46": {"p": 4072, "e": []}, "W47": {"p": 4072, "e": []}, "W48": {"p": 3236, "e": []}, "W49": {"p": 4072, "e": []}}, "lv": "W39", "kgu": 0.522, "mb": "MB1"}, "G BIFE DE VACIO CHICO": {"w": {"W32": {"p": 7043, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 769, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 3095, "f": "DE"}, {"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 916, "f": "US"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 58, "f": "ES"}, {"p": "UKRAINE", "c": "TH HALYTSKA SVIZHYNA L", "t": "V", "kg": 416, "f": ""}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 37, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 42, "f": "CN"}]}, "W33": {"p": 5179, "e": [{"p": "VIETNAM", "c": "FOOD SOURCE INTERNATIO", "t": "V", "kg": 125, "f": "VN"}]}, "W34": {"p": 4117, "e": []}, "W35": {"p": 5179, "e": []}, "W36": {"p": 5179, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 459, "f": ""}]}, "W37": {"p": 5179, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 230, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 615, "f": ""}]}, "W38": {"p": 5179, "e": []}, "W39": {"p": 5246, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 769, "f": "CL"}]}, "W40": {"p": 5312, "e": []}, "W41": {"p": 5179, "e": []}, "W42": {"p": 4117, "e": []}, "W43": {"p": 5179, "e": []}, "W44": {"p": 5179, "e": []}, "W45": {"p": 5179, "e": []}, "W46": {"p": 5179, "e": []}, "W47": {"p": 5179, "e": []}, "W48": {"p": 4117, "e": []}, "W49": {"p": 5179, "e": []}}, "lv": "W39", "kgu": 0.664, "mb": "MB1"}, "G BIFE DE VACIO GRANDE": {"w": {"W32": {"p": 16770, "e": [{"p": "UNITED ARAB EMIRAT", "c": "Food Source Internatio", "t": "V", "kg": 3, "f": "AE"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 4961, "f": "DE"}, {"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 2000, "f": "US"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 299, "f": "MX"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 40, "f": "ES"}, {"p": "UKRAINE", "c": "TH HALYTSKA SVIZHYNA L", "t": "V", "kg": 398, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 108, "f": "CN"}]}, "W33": {"p": 12332, "e": [{"p": "VIETNAM", "c": "FOOD SOURCE INTERNATIO", "t": "V", "kg": 119, "f": "VN"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 299, "f": "MX"}]}, "W34": {"p": 9802, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 500, "f": "BR"}]}, "W35": {"p": 12332, "e": []}, "W36": {"p": 12332, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 895, "f": ""}]}, "W37": {"p": 12332, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 299, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 447, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 1249, "f": ""}]}, "W38": {"p": 12332, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 500, "f": "BR"}]}, "W39": {"p": 12490, "e": []}, "W40": {"p": 12648, "e": []}, "W41": {"p": 12332, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 299, "f": "MX"}]}, "W42": {"p": 9802, "e": []}, "W43": {"p": 12332, "e": []}, "W44": {"p": 12332, "e": []}, "W45": {"p": 12332, "e": []}, "W46": {"p": 12332, "e": []}, "W47": {"p": 12332, "e": []}, "W48": {"p": 9802, "e": []}, "W49": {"p": 12332, "e": []}}, "lv": "W41", "kgu": 1.581, "mb": "MB1"}, "G ENTRAÑA": {"w": {"W32": {"p": 8738, "e": [{"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 8739, "f": "US"}]}, "W33": {"p": 7262, "e": [{"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 4544, "f": "US"}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 2718, "f": "PE"}]}, "W34": {"p": 5772, "e": [{"p": "PERU", "c": "PERU", "t": "C", "kg": 148, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 78, "f": "CN"}]}, "W35": {"p": 7262, "e": []}, "W36": {"p": 7262, "e": []}, "W37": {"p": 7262, "e": []}, "W38": {"p": 7262, "e": []}, "W39": {"p": 7355, "e": []}, "W40": {"p": 7448, "e": []}, "W41": {"p": 7262, "e": []}, "W42": {"p": 5772, "e": []}, "W43": {"p": 7262, "e": []}, "W44": {"p": 7262, "e": []}, "W45": {"p": 7262, "e": []}, "W46": {"p": 7262, "e": []}, "W47": {"p": 7262, "e": []}, "W48": {"p": 5772, "e": []}, "W49": {"p": 7262, "e": []}}, "lv": "W34", "kgu": 0.931, "mb": "MB1"}}, "go": ["G SHORT RIBS 7C", "G TOP PLATE", "G ENTRAÑA FINA", "G BIFE DE VACIO CHICO", "G BIFE DE VACIO GRANDE", "G ENTRAÑA"]}, "PECHO": {"g": {"G HUACHALOMO": {"w": {"W32": {"p": 9223, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 143, "f": "CN"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 66, "f": "DE"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1377, "f": "CL"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 7, "f": ""}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 31, "f": "ES"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 31, "f": "IL"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 5698, "f": "CN"}]}, "W33": {"p": 8892, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 3062, "f": "CN"}]}, "W34": {"p": 7148, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W35": {"p": 8892, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W36": {"p": 8892, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1663, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W37": {"p": 17435, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 830, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 2559, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W38": {"p": 15692, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W39": {"p": 27547, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1377, "f": "CL"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W40": {"p": 27896, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W41": {"p": 15692, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1869, "f": ""}]}, "W42": {"p": 7148, "e": []}, "W43": {"p": 8892, "e": []}, "W44": {"p": 8892, "e": []}, "W45": {"p": 8892, "e": []}, "W46": {"p": 8892, "e": []}, "W47": {"p": 8892, "e": []}, "W48": {"p": 7148, "e": []}, "W49": {"p": 8892, "e": []}}, "lv": "W41", "kgu": 3.487, "mb": "MB1"}, "G SOBRECOSTILLA": {"w": {"W32": {"p": 6597, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 102, "f": "CN"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 47, "f": "DE"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 985, "f": "CL"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 5, "f": ""}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 22, "f": "ES"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 22, "f": "IL"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 4075, "f": "CN"}]}, "W33": {"p": 6360, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 2207, "f": "CN"}]}, "W34": {"p": 5113, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W35": {"p": 6360, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W36": {"p": 6360, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1190, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W37": {"p": 12470, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 594, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 1831, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W38": {"p": 11223, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W39": {"p": 19703, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 985, "f": "CL"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W40": {"p": 19952, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W41": {"p": 11223, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1337, "f": ""}]}, "W42": {"p": 5113, "e": []}, "W43": {"p": 6360, "e": []}, "W44": {"p": 6360, "e": []}, "W45": {"p": 6360, "e": []}, "W46": {"p": 6360, "e": []}, "W47": {"p": 6360, "e": []}, "W48": {"p": 5113, "e": []}, "W49": {"p": 6360, "e": []}}, "lv": "W41", "kgu": 2.494, "mb": "MB1"}, "G CARNAZA DE PALETA": {"w": {"W32": {"p": 9953, "e": [{"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 4, "f": "MY"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 2461, "f": "DE"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 158, "f": "ES"}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 34, "f": "IL"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 7296, "f": "CN"}]}, "W33": {"p": 9596, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 9596, "f": "CN"}]}, "W34": {"p": 7714, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 7714, "f": "CN"}]}, "W35": {"p": 9596, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 1197, "f": "CN"}]}, "W36": {"p": 9596, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 2382, "f": ""}]}, "W37": {"p": 18815, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1189, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 3511, "f": ""}]}, "W38": {"p": 16934, "e": []}, "W39": {"p": 29728, "e": []}, "W40": {"p": 30104, "e": []}, "W41": {"p": 16934, "e": []}, "W42": {"p": 7714, "e": []}, "W43": {"p": 9596, "e": []}, "W44": {"p": 9596, "e": []}, "W45": {"p": 9596, "e": []}, "W46": {"p": 9596, "e": []}, "W47": {"p": 9596, "e": []}, "W48": {"p": 7714, "e": []}, "W49": {"p": 9596, "e": []}}, "lv": "W37", "kgu": 3.763, "mb": "MB1"}, "G MARUCHA": {"w": {"W32": {"p": 6195, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 110, "f": "CN"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1522, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 16, "f": "DE"}, {"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 1384, "f": "SG"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 87, "f": "ES"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 68, "f": "IL"}, {"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 1108, "f": "PH"}]}, "W33": {"p": 5972, "e": [{"p": "VIETNAM", "c": "FOOD SOURCE INTERNATIO", "t": "V", "kg": 576, "f": "VN"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}, {"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 321, "f": "PH"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 3176, "f": "MY"}]}, "W34": {"p": 4801, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 2902, "f": "MY"}]}, "W35": {"p": 5972, "e": [{"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 1384, "f": "SG"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 2689, "f": "MY"}]}, "W36": {"p": 5972, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1239, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 2274, "f": "MY"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 148, "f": "CN"}]}, "W37": {"p": 11710, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 618, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 1822, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}]}, "W38": {"p": 10539, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}]}, "W39": {"p": 18502, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1522, "f": "CL"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}]}, "W40": {"p": 18736, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}]}, "W41": {"p": 10539, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1899, "f": ""}]}, "W42": {"p": 4801, "e": []}, "W43": {"p": 5972, "e": []}, "W44": {"p": 5972, "e": []}, "W45": {"p": 5972, "e": []}, "W46": {"p": 5972, "e": []}, "W47": {"p": 5972, "e": []}, "W48": {"p": 4801, "e": []}, "W49": {"p": 5972, "e": []}}, "lv": "W41", "kgu": 2.342, "mb": "MB1"}, "G CHINGOLO": {"w": {"W32": {"p": 3309, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 55, "f": "CN"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 73, "f": "ES"}, {"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}, {"p": "UKRAINE", "c": "TH HALYTSKA SVIZHYNA L", "t": "V", "kg": 3, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 1691, "f": "CN"}]}, "W33": {"p": 3190, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 707, "f": "CN"}]}, "W34": {"p": 2565, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W35": {"p": 3190, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W36": {"p": 3190, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 797, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W37": {"p": 6255, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 398, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 1073, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W38": {"p": 5629, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W39": {"p": 9883, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W40": {"p": 10008, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W41": {"p": 5629, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1487, "f": ""}]}, "W42": {"p": 2565, "e": []}, "W43": {"p": 3190, "e": []}, "W44": {"p": 3190, "e": []}, "W45": {"p": 3190, "e": []}, "W46": {"p": 3190, "e": []}, "W47": {"p": 3190, "e": []}, "W48": {"p": 2565, "e": []}, "W49": {"p": 3190, "e": []}}, "lv": "W41", "kgu": 1.251, "mb": "MB1"}, "G BRISKET POINT END": {"w": {"W32": {"p": 24546, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 947, "f": "DE"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 3350, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 186, "f": "DE"}, {"p": "UKRAINE", "c": "TH HALYTSKA SVIZHYNA L", "t": "V", "kg": 418, "f": ""}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 102, "f": "IL"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 19544, "f": "MY"}]}, "W33": {"p": 23664, "e": [{"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 23664, "f": "MY"}]}, "W34": {"p": 19024, "e": [{"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 19024, "f": "MY"}]}, "W35": {"p": 23664, "e": [{"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 23664, "f": "MY"}]}, "W36": {"p": 23664, "e": [{"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 23664, "f": "MY"}]}, "W37": {"p": 46400, "e": [{"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 5503, "f": "MY"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 687, "f": "CN"}]}, "W38": {"p": 41760, "e": []}, "W39": {"p": 73312, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 3350, "f": "CL"}]}, "W40": {"p": 74240, "e": []}, "W41": {"p": 41760, "e": []}, "W42": {"p": 19024, "e": []}, "W43": {"p": 23664, "e": []}, "W44": {"p": 23664, "e": []}, "W45": {"p": 23664, "e": []}, "W46": {"p": 23664, "e": []}, "W47": {"p": 23664, "e": []}, "W48": {"p": 19024, "e": []}, "W49": {"p": 23664, "e": []}}, "lv": "W39", "kgu": 9.28, "mb": "MB1"}, "G BRISKET NAVEL END": {"w": {"W32": {"p": 35994, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 537, "f": "DE"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 33883, "f": "MY"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 1574, "f": "CN"}]}, "W33": {"p": 41051, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 41051, "f": "CN"}]}, "W34": {"p": 32631, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 32631, "f": "CN"}]}, "W35": {"p": 41051, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 41051, "f": "CN"}]}, "W36": {"p": 41051, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 6110, "f": "CN"}]}, "W37": {"p": 41051, "e": []}, "W38": {"p": 41051, "e": []}, "W39": {"p": 41578, "e": []}, "W40": {"p": 42104, "e": []}, "W41": {"p": 41051, "e": []}, "W42": {"p": 32631, "e": []}, "W43": {"p": 41051, "e": []}, "W44": {"p": 41051, "e": []}, "W45": {"p": 41051, "e": []}, "W46": {"p": 41051, "e": []}, "W47": {"p": 41051, "e": []}, "W48": {"p": 32631, "e": []}, "W49": {"p": 41051, "e": []}}, "lv": "W36", "kgu": 5.263, "mb": "MB1"}, "G BRAZUELO S/CONICO": {"w": {"W32": {"p": 9041, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 41, "f": "IL"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 5800, "f": "CN"}]}, "W33": {"p": 8716, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 5517, "f": "CN"}]}, "W34": {"p": 7007, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 3808, "f": "CN"}]}, "W35": {"p": 8716, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 5517, "f": "CN"}]}, "W36": {"p": 8716, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 2088, "f": "CN"}]}, "W37": {"p": 17090, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}]}, "W38": {"p": 15381, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}]}, "W39": {"p": 27002, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}]}, "W40": {"p": 27344, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}]}, "W41": {"p": 15381, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 3199, "f": ""}]}, "W42": {"p": 7007, "e": []}, "W43": {"p": 8716, "e": []}, "W44": {"p": 8716, "e": []}, "W45": {"p": 8716, "e": []}, "W46": {"p": 8716, "e": []}, "W47": {"p": 8716, "e": []}, "W48": {"p": 7007, "e": []}, "W49": {"p": 8716, "e": []}}, "lv": "W41", "kgu": 3.418, "mb": "MB1"}, "G CONICO": {"w": {"W32": {"p": 1418, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 59, "f": "CN"}, {"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 500, "f": "SG"}, {"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 359, "f": "CN"}]}, "W33": {"p": 1367, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 867, "f": "CN"}]}, "W34": {"p": 1099, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 522, "f": "CN"}]}, "W35": {"p": 1367, "e": [{"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 400, "f": "SG"}, {"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}]}, "W36": {"p": 1367, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}]}, "W37": {"p": 2680, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}]}, "W38": {"p": 2412, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}]}, "W39": {"p": 4234, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}]}, "W40": {"p": 4288, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}]}, "W41": {"p": 2412, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 500, "f": ""}]}, "W42": {"p": 1099, "e": []}, "W43": {"p": 1367, "e": []}, "W44": {"p": 1367, "e": []}, "W45": {"p": 1367, "e": []}, "W46": {"p": 1367, "e": []}, "W47": {"p": 1367, "e": []}, "W48": {"p": 1099, "e": []}, "W49": {"p": 1367, "e": []}}, "lv": "W41", "kgu": 0.536, "mb": "MB1"}, "G TAPA DE BIFE": {"w": {"W32": {"p": 3886, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 689, "f": "CL"}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 13, "f": "IL"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 251, "f": "CN"}]}, "W33": {"p": 3746, "e": []}, "W34": {"p": 3011, "e": []}, "W35": {"p": 3746, "e": []}, "W36": {"p": 3746, "e": []}, "W37": {"p": 7345, "e": []}, "W38": {"p": 6610, "e": []}, "W39": {"p": 11605, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 689, "f": "CL"}]}, "W40": {"p": 11752, "e": []}, "W41": {"p": 6610, "e": []}, "W42": {"p": 3011, "e": []}, "W43": {"p": 3746, "e": []}, "W44": {"p": 3746, "e": []}, "W45": {"p": 3746, "e": []}, "W46": {"p": 3746, "e": []}, "W47": {"p": 3746, "e": []}, "W48": {"p": 3011, "e": []}, "W49": {"p": 3746, "e": []}}, "lv": "W39", "kgu": 1.469, "mb": "MB1"}}, "go": ["G HUACHALOMO", "G SOBRECOSTILLA", "G CARNAZA DE PALETA", "G MARUCHA", "G CHINGOLO", "G BRISKET POINT END", "G BRISKET NAVEL END", "G BRAZUELO S/CONICO", "G CONICO", "G TAPA DE BIFE"]}, "R&L HILTON": {"g": {"G BIFE ANCHO S/TAPA": {"w": {"W32": {"p": 1065, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 240, "f": "DE"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 520, "f": ""}]}, "W33": {"p": 1098, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 728, "f": "DE"}]}, "W34": {"p": 732, "e": []}, "W35": {"p": 1098, "e": []}, "W36": {"p": 1098, "e": []}, "W39": {"p": 7317, "e": []}, "W40": {"p": 7317, "e": []}, "W42": {"p": 732, "e": []}, "W43": {"p": 1098, "e": []}, "W44": {"p": 1098, "e": []}, "W45": {"p": 1098, "e": []}, "W46": {"p": 1098, "e": []}, "W47": {"p": 1098, "e": []}, "W48": {"p": 732, "e": []}, "W49": {"p": 1098, "e": []}}, "lv": "W33", "kgu": 4.065, "mb": "MB1"}, "G BIFE ANGOSTO": {"w": {"W32": {"p": 5996, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 7499, "f": "DE"}]}, "W33": {"p": 7536, "e": [{"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 437, "f": ""}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 7099, "f": "DE"}]}, "W34": {"p": 5024, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 1763, "f": "DE"}]}, "W35": {"p": 7536, "e": []}, "W36": {"p": 7536, "e": []}, "W37": {"p": 5024, "e": []}, "W38": {"p": 7536, "e": []}, "W39": {"p": 7536, "e": []}, "W40": {"p": 7536, "e": []}, "W41": {"p": 7536, "e": []}, "W42": {"p": 5024, "e": []}, "W43": {"p": 7536, "e": []}, "W44": {"p": 7536, "e": []}, "W45": {"p": 7536, "e": []}, "W46": {"p": 7536, "e": []}, "W47": {"p": 7536, "e": []}, "W48": {"p": 5024, "e": []}, "W49": {"p": 7536, "e": []}}, "lv": "W34", "kgu": 4.652, "mb": "MB1"}, "G CORAZON DE CUADRIL": {"w": {"W32": {"p": 3362, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 3829, "f": "DE"}]}, "W33": {"p": 4227, "e": [{"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 269, "f": ""}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 3958, "f": "DE"}]}, "W34": {"p": 2818, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 252, "f": "DE"}]}, "W35": {"p": 4227, "e": []}, "W36": {"p": 4227, "e": []}, "W37": {"p": 2818, "e": []}, "W38": {"p": 4227, "e": []}, "W39": {"p": 4227, "e": []}, "W40": {"p": 4227, "e": []}, "W41": {"p": 4227, "e": []}, "W42": {"p": 2818, "e": []}, "W43": {"p": 4227, "e": []}, "W44": {"p": 4227, "e": []}, "W45": {"p": 4227, "e": []}, "W46": {"p": 4227, "e": []}, "W47": {"p": 4227, "e": []}, "W48": {"p": 2818, "e": []}, "W49": {"p": 4227, "e": []}}, "lv": "W34", "kgu": 2.472, "mb": "MB1"}, "G LOMO": {"w": {"W32": {"p": 2615, "e": [{"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 42, "f": ""}]}, "W33": {"p": 3288, "e": [{"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 2900, "f": "DE"}]}, "W34": {"p": 2192, "e": []}, "W35": {"p": 3288, "e": []}, "W36": {"p": 3288, "e": []}, "W37": {"p": 2192, "e": []}, "W38": {"p": 3288, "e": []}, "W39": {"p": 3288, "e": []}, "W40": {"p": 3288, "e": []}, "W41": {"p": 3288, "e": []}, "W42": {"p": 2192, "e": []}, "W43": {"p": 3288, "e": []}, "W44": {"p": 3288, "e": []}, "W45": {"p": 3288, "e": []}, "W46": {"p": 3288, "e": []}, "W47": {"p": 3288, "e": []}, "W48": {"p": 2192, "e": []}, "W49": {"p": 3288, "e": []}}, "lv": "W33", "kgu": 1.923, "mb": "MB1"}, "G TAPA DE CUADRIL": {"w": {"W32": {"p": 2284, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 2595, "f": "ES"}]}, "W33": {"p": 2871, "e": [{"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 699, "f": ""}]}, "W34": {"p": 1914, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 1914, "f": "ES"}]}, "W35": {"p": 2871, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 2871, "f": "ES"}]}, "W36": {"p": 2871, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 4214, "f": "ES"}]}, "W37": {"p": 1914, "e": []}, "W38": {"p": 2871, "e": []}, "W39": {"p": 2871, "e": []}, "W40": {"p": 2871, "e": []}, "W41": {"p": 2871, "e": []}, "W42": {"p": 1914, "e": []}, "W43": {"p": 2871, "e": []}, "W44": {"p": 2871, "e": []}, "W45": {"p": 2871, "e": []}, "W46": {"p": 2871, "e": []}, "W47": {"p": 2871, "e": []}, "W48": {"p": 1914, "e": []}, "W49": {"p": 2871, "e": []}}, "lv": "W36", "kgu": 1.595, "mb": "MB1"}, "G COLITA DE CUADRIL": {"w": {"W32": {"p": 1641, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 1486, "f": "ES"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 155, "f": ""}]}, "W33": {"p": 2063, "e": [{"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 245, "f": ""}]}, "W34": {"p": 1375, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 1375, "f": "ES"}]}, "W35": {"p": 2063, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 2063, "f": "ES"}]}, "W36": {"p": 2063, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 2561, "f": "ES"}]}, "W37": {"p": 1375, "e": []}, "W38": {"p": 2063, "e": []}, "W39": {"p": 2063, "e": []}, "W40": {"p": 2063, "e": []}, "W41": {"p": 2063, "e": []}, "W42": {"p": 1375, "e": []}, "W43": {"p": 2063, "e": []}, "W44": {"p": 2063, "e": []}, "W45": {"p": 2063, "e": []}, "W46": {"p": 2063, "e": []}, "W47": {"p": 2063, "e": []}, "W48": {"p": 1375, "e": []}, "W49": {"p": 2063, "e": []}}, "lv": "W36", "kgu": 1.146, "mb": "MB1"}}, "go": ["G BIFE ANCHO S/TAPA", "G BIFE ANGOSTO", "G CORAZON DE CUADRIL", "G LOMO", "G TAPA DE CUADRIL", "G COLITA DE CUADRIL"]}, "R&L W": {"g": {"G BIFE ANCHO S/TAPA": {"w": {"W32": {"p": 6878, "e": [{"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 24, "f": "PE"}, {"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 45, "f": "MY"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 1992, "f": "DE"}, {"p": "GREECE", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 12, "f": "GR"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1943, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 2793, "f": "DE"}, {"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 69, "f": "HK"}]}, "W33": {"p": 6406, "e": [{"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 606, "f": "HK"}, {"p": "SINGAPORE", "c": "INDOGUNA", "t": "V", "kg": 415, "f": "SG"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 236, "f": "ES"}, {"p": "", "c": "SAFW", "t": "R", "kg": 414, "f": ""}, {"p": "ISRAEL", "c": "NETO MALINDA TRADE LTD", "t": "V", "kg": 24, "f": "IL"}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 49, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 276, "f": "CN"}]}, "W34": {"p": 5142, "e": [{"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 4167, "f": "MY"}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 976, "f": "PE"}]}, "W35": {"p": 7443, "e": [{"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 585, "f": "PE"}, {"p": "", "c": "SAFW", "t": "R", "kg": 414, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 1077, "f": ""}]}, "W36": {"p": 7329, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1984, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 207, "f": ""}]}, "W37": {"p": 18545, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 992, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 2927, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 207, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 1077, "f": ""}]}, "W38": {"p": 16882, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 207, "f": ""}]}, "W39": {"p": 23016, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1943, "f": "CL"}, {"p": "", "c": "SAFW", "t": "R", "kg": 207, "f": ""}]}, "W40": {"p": 25203, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 207, "f": ""}]}, "W41": {"p": 17402, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 207, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 1077, "f": ""}]}, "W42": {"p": 7602, "e": []}, "W43": {"p": 9268, "e": []}, "W44": {"p": 9268, "e": []}, "W45": {"p": 9268, "e": []}, "W46": {"p": 9268, "e": []}, "W47": {"p": 9268, "e": []}, "W48": {"p": 7602, "e": []}, "W49": {"p": 9268, "e": []}}, "lv": "W41", "kgu": 4.065, "mb": "MB1"}, "G BIFE ANGOSTO": {"w": {"W32": {"p": 22395, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 93, "f": "PE"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 4452, "f": "DE"}, {"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 93, "f": "CN"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 2317, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 2428, "f": "DE"}, {"p": "SINGAPORE", "c": "INDOGUNA", "t": "V", "kg": 288, "f": "SG"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 9, "f": "ES"}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}, {"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 37, "f": "HK"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 8839, "f": "MY"}]}, "W33": {"p": 23237, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 3884, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 447, "f": "CN"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 12086, "f": "MY"}]}, "W34": {"p": 16459, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 6801, "f": "PE"}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W35": {"p": 24590, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W36": {"p": 23637, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 2563, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W37": {"p": 26647, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1279, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 3670, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W38": {"p": 25121, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W39": {"p": 24553, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 2317, "f": "CL"}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W40": {"p": 25958, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W41": {"p": 24135, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 116, "f": ""}]}, "W42": {"p": 20934, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W43": {"p": 25121, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W44": {"p": 25121, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W45": {"p": 25121, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W46": {"p": 25121, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W47": {"p": 25121, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W48": {"p": 20934, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W49": {"p": 25121, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W50": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W51": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}, "W52": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 3722, "f": ""}]}}, "lv": "W52", "kgu": 4.652, "mb": "MB1"}, "G CORAZON DE CUADRIL": {"w": {"W32": {"p": 12825, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}, {"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 3839, "f": "US"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 630, "f": "DE"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 2005, "f": "DE"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 10, "f": "ES"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 32, "f": "MY"}, {"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 5, "f": "PH"}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 2005, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 116, "f": "CN"}]}, "W33": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W34": {"p": 11742, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 1503, "f": "PE"}]}, "W35": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W36": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1466, "f": ""}]}, "W37": {"p": 15499, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 732, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 2237, "f": ""}]}, "W38": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W39": {"p": 14325, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W40": {"p": 14560, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W41": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W42": {"p": 11742, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W43": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W44": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W45": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W46": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W47": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W48": {"p": 11742, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W49": {"p": 14090, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W50": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W51": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}, "W52": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1978, "f": ""}]}}, "lv": "W52", "kgu": 2.472, "mb": "MB1"}, "G LOMO": {"w": {"W32": {"p": 9627, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}, {"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 1310, "f": "US"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 1313, "f": "DE"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1063, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 2071, "f": "DE"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 435, "f": "MX"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 44, "f": "ES"}, {"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 1694, "f": "PH"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 108, "f": "CN"}]}, "W33": {"p": 6938, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W34": {"p": 5481, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 2071, "f": ""}]}, "W35": {"p": 7405, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W36": {"p": 8988, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1108, "f": ""}]}, "W37": {"p": 10290, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 554, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 1658, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 2071, "f": ""}]}, "W38": {"p": 9194, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W39": {"p": 9377, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1063, "f": "CL"}]}, "W40": {"p": 11326, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W41": {"p": 10961, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 2071, "f": ""}]}, "W42": {"p": 9134, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W43": {"p": 10961, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W44": {"p": 10961, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W45": {"p": 10961, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W46": {"p": 10961, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W47": {"p": 10961, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W48": {"p": 9134, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W49": {"p": 10961, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W50": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W51": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}, "W52": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1538, "f": ""}]}}, "lv": "W52", "kgu": 1.923, "mb": "MB1"}, "G TAPA DE CUADRIL": {"w": {"W32": {"p": 6868, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 2753, "f": "PE"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 10, "f": "DE"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1849, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 981, "f": "DE"}]}, "W33": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 1018, "f": "DE"}, {"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 225, "f": "SG"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2699, "f": "MX"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 2581, "f": "ES"}, {"p": "QATAR", "c": "WIDAM FOOD CO.(QSC)", "t": "V", "kg": 1050, "f": ""}, {"p": "UNITED ARAB EMIRAT", "c": "Food Source Internatio", "t": "V", "kg": 249, "f": "AE"}, {"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 474, "f": "PH"}]}, "W34": {"p": 4785, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 3509, "f": "BR"}]}, "W35": {"p": 9160, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 1888, "f": "BR"}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 3999, "f": "PE"}, {"p": "", "c": "Suiza", "t": "R", "kg": 499, "f": ""}, {"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 349, "f": "SG"}, {"p": "PHILIPPINES", "c": "PHILIPPINES", "t": "C", "kg": 1026, "f": "PH"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 123, "f": "MY"}]}, "W36": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1300, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 895, "f": ""}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 1308, "f": "MY"}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 442, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 118, "f": "CN"}]}, "W37": {"p": 10527, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1300, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 447, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 1250, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 499, "f": ""}]}, "W38": {"p": 5970, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 4694, "f": "BR"}]}, "W39": {"p": 9730, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 703, "f": "BR"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1849, "f": "CL"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1300, "f": "MX"}]}, "W40": {"p": 9889, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W41": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1300, "f": "MX"}, {"p": "", "c": "Suiza", "t": "R", "kg": 499, "f": ""}]}, "W42": {"p": 7975, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W43": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W44": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W45": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W46": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W47": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W48": {"p": 7975, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W49": {"p": 9570, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W50": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W51": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}, "W52": {"p": 0, "e": [{"p": "", "c": "", "t": "V", "kg": 1276, "f": ""}]}}, "lv": "W52", "kgu": 1.595, "mb": "MB1"}, "G COLITA DE CUADRIL": {"w": {"W32": {"p": 7089, "e": [{"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 97, "f": "PE"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 2299, "f": "DE"}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 4693, "f": "ES"}]}, "W33": {"p": 6876, "e": [{"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 602, "f": "ES"}, {"p": "PERU", "c": "PERU", "t": "C", "kg": 2999, "f": "PE"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 69, "f": "CN"}]}, "W34": {"p": 3438, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 3438, "f": "BR"}]}, "W35": {"p": 6768, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 2561, "f": "BR"}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 2999, "f": "PE"}]}, "W36": {"p": 6876, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 744, "f": ""}]}, "W37": {"p": 7564, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 371, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 1041, "f": ""}]}, "W38": {"p": 4476, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 4476, "f": "BR"}]}, "W39": {"p": 6991, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 1523, "f": "BR"}]}, "W40": {"p": 7105, "e": []}, "W41": {"p": 6876, "e": []}, "W42": {"p": 5730, "e": []}, "W43": {"p": 6876, "e": []}, "W44": {"p": 6876, "e": []}, "W45": {"p": 6876, "e": []}, "W46": {"p": 6876, "e": []}, "W47": {"p": 6876, "e": []}, "W48": {"p": 5730, "e": []}, "W49": {"p": 6876, "e": []}}, "lv": "W39", "kgu": 1.146, "mb": "MB1"}, "G BIFE ANCHO S/TAPA__MB2": {"w": {"W32": {"p": 4679, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 159, "f": "CN"}, {"p": "GREECE", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 1041, "f": "GR"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 504, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 207, "f": "DE"}, {"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 890, "f": "US"}, {"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 8, "f": "HK"}]}, "W33": {"p": 3707, "e": [{"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 24, "f": "DE"}, {"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 642, "f": "HK"}, {"p": "SINGAPORE", "c": "INDOGUNA", "t": "V", "kg": 167, "f": "SG"}, {"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 1138, "f": "SG"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 890, "f": "MX"}]}, "W34": {"p": 3041, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 890, "f": "BR"}, {"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 520, "f": "MY"}, {"p": "", "c": "SAFW", "t": "R", "kg": 159, "f": ""}]}, "W35": {"p": 3707, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 935, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 890, "f": ""}]}, "W36": {"p": 3707, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 890, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 159, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 890, "f": ""}]}, "W37": {"p": 8130, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 890, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 890, "f": ""}]}, "W38": {"p": 7317, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 520, "f": "BR"}, {"p": "", "c": "SAFW", "t": "R", "kg": 890, "f": ""}]}, "W39": {"p": 9919, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 890, "f": "BR"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 890, "f": "CL"}]}, "W40": {"p": 10081, "e": []}, "W41": {"p": 7317, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 890, "f": "MX"}]}, "W42": {"p": 3041, "e": []}, "W43": {"p": 3707, "e": []}, "W44": {"p": 3707, "e": []}, "W45": {"p": 3707, "e": []}, "W46": {"p": 3707, "e": []}, "W47": {"p": 3707, "e": []}, "W48": {"p": 3041, "e": []}, "W49": {"p": 3707, "e": []}}, "lv": "W41", "kgu": 4.065, "mb": "MB2"}, "G BIFE ANGOSTO__MB2": {"w": {"W32": {"p": 12621, "e": [{"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 9, "f": "PE"}, {"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 14, "f": "MY"}, {"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 498, "f": "CN"}, {"p": "GREECE", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 968, "f": "GR"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 582, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 447, "f": "DE"}, {"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 986, "f": "US"}]}, "W33": {"p": 10048, "e": [{"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 19, "f": "DE"}, {"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 181, "f": "HK"}, {"p": "SINGAPORE", "c": "INDOGUNA", "t": "V", "kg": 116, "f": "SG"}, {"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 582, "f": "SG"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 986, "f": "MX"}]}, "W34": {"p": 8374, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 1261, "f": "BR"}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 1940, "f": "PE"}, {"p": "", "c": "SAFW", "t": "R", "kg": 498, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 777, "f": ""}]}, "W35": {"p": 10048, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 530, "f": ""}]}, "W36": {"p": 10048, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 986, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 498, "f": ""}]}, "W37": {"p": 11053, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 986, "f": "MX"}]}, "W38": {"p": 10048, "e": []}, "W39": {"p": 10216, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 986, "f": "BR"}]}, "W40": {"p": 10383, "e": []}, "W41": {"p": 10048, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 986, "f": "MX"}]}, "W42": {"p": 8374, "e": []}, "W43": {"p": 10048, "e": []}, "W44": {"p": 10048, "e": []}, "W45": {"p": 10048, "e": []}, "W46": {"p": 10048, "e": []}, "W47": {"p": 10048, "e": []}, "W48": {"p": 8374, "e": []}, "W49": {"p": 10048, "e": []}}, "lv": "W41", "kgu": 4.652, "mb": "MB2"}, "G CORAZON DE CUADRIL__MB2": {"w": {"W32": {"p": 7080, "e": [{"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 1701, "f": "HK"}]}, "W33": {"p": 5636, "e": []}, "W34": {"p": 4697, "e": []}, "W35": {"p": 5636, "e": []}, "W36": {"p": 5636, "e": []}, "W37": {"p": 6200, "e": []}, "W38": {"p": 5636, "e": []}, "W39": {"p": 5730, "e": []}, "W40": {"p": 5824, "e": []}, "W41": {"p": 5636, "e": []}, "W42": {"p": 4697, "e": []}, "W43": {"p": 5636, "e": []}, "W44": {"p": 5636, "e": []}, "W45": {"p": 5636, "e": []}, "W46": {"p": 5636, "e": []}, "W47": {"p": 5636, "e": []}, "W48": {"p": 4697, "e": []}, "W49": {"p": 5636, "e": []}}, "lv": "W32", "kgu": 2.472, "mb": "MB2"}, "G LOMO__MB2": {"w": {"W32": {"p": 5507, "e": [{"p": "UNITED STATES", "c": "ORLEANS INTERNATIONAL", "t": "V", "kg": 288, "f": "US"}, {"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 808, "f": "MY"}, {"p": "GERMANY", "c": "MEAT 2000 FLEISCHHANDE", "t": "V", "kg": 127, "f": "DE"}, {"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 206, "f": "CN"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 206, "f": "CL"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 25, "f": "DE"}, {"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 13, "f": "HK"}]}, "W33": {"p": 4384, "e": [{"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 2267, "f": "DE"}, {"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 619, "f": "HK"}, {"p": "SINGAPORE", "c": "INDOGUNA", "t": "V", "kg": 102, "f": "SG"}, {"p": "SINGAPORE", "c": "FOODIE MARKET PLACE PT", "t": "V", "kg": 1035, "f": "SG"}]}, "W34": {"p": 3654, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 2383, "f": "BR"}, {"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 829, "f": "PE"}, {"p": "", "c": "SAFW", "t": "R", "kg": 206, "f": ""}]}, "W35": {"p": 4384, "e": [{"p": "PERU", "c": "OREGON FOODS SAC", "t": "V", "kg": 1531, "f": "PE"}, {"p": "", "c": "SAFW", "t": "R", "kg": 258, "f": ""}, {"p": "", "c": "Suiza", "t": "R", "kg": 1767, "f": ""}]}, "W36": {"p": 4384, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 206, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 1767, "f": ""}]}, "W37": {"p": 4823, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1767, "f": ""}]}, "W38": {"p": 4384, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 1767, "f": ""}]}, "W39": {"p": 4458, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1767, "f": "CL"}]}, "W40": {"p": 4531, "e": []}, "W41": {"p": 4384, "e": []}, "W42": {"p": 3654, "e": []}, "W43": {"p": 4384, "e": []}, "W44": {"p": 4384, "e": []}, "W45": {"p": 4384, "e": []}, "W46": {"p": 4384, "e": []}, "W47": {"p": 4384, "e": []}, "W48": {"p": 3654, "e": []}, "W49": {"p": 4384, "e": []}}, "lv": "W39", "kgu": 1.923, "mb": "MB2"}, "G TAPA DE CUADRIL__MB2": {"w": {"W32": {"p": 4809, "e": [{"p": "HONG KONG", "c": "OSIRIS FOOD LIMITED", "t": "V", "kg": 2999, "f": "HK"}]}, "W33": {"p": 3828, "e": []}, "W34": {"p": 3190, "e": [{"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 3190, "f": "MY"}]}, "W35": {"p": 3828, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 410, "f": "BR"}]}, "W36": {"p": 3828, "e": []}, "W37": {"p": 4211, "e": []}, "W38": {"p": 3828, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 3600, "f": "BR"}]}, "W39": {"p": 3892, "e": []}, "W40": {"p": 3956, "e": []}, "W41": {"p": 3828, "e": []}, "W42": {"p": 3190, "e": []}, "W43": {"p": 3828, "e": []}, "W44": {"p": 3828, "e": []}, "W45": {"p": 3828, "e": []}, "W46": {"p": 3828, "e": []}, "W47": {"p": 3828, "e": []}, "W48": {"p": 3190, "e": []}, "W49": {"p": 3828, "e": []}}, "lv": "W38", "kgu": 1.595, "mb": "MB2"}, "G COLITA DE CUADRIL__MB2": {"w": {"W32": {"p": 3455, "e": []}, "W33": {"p": 2750, "e": []}, "W34": {"p": 2292, "e": [{"p": "MALAYSIA", "c": "Lucky Frozen Sdn Bhd", "t": "V", "kg": 2292, "f": "MY"}]}, "W35": {"p": 2750, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 108, "f": "BR"}]}, "W36": {"p": 2750, "e": []}, "W37": {"p": 3025, "e": []}, "W38": {"p": 2750, "e": [{"p": "BRAZIL", "c": "PRIME CATER COMERCIAL", "t": "V", "kg": 2400, "f": "BR"}]}, "W39": {"p": 2796, "e": []}, "W40": {"p": 2842, "e": []}, "W41": {"p": 2750, "e": []}, "W42": {"p": 2292, "e": []}, "W43": {"p": 2750, "e": []}, "W44": {"p": 2750, "e": []}, "W45": {"p": 2750, "e": []}, "W46": {"p": 2750, "e": []}, "W47": {"p": 2750, "e": []}, "W48": {"p": 2292, "e": []}, "W49": {"p": 2750, "e": []}}, "lv": "W38", "kgu": 1.146, "mb": "MB2"}}, "go": ["G BIFE ANCHO S/TAPA", "G BIFE ANGOSTO", "G CORAZON DE CUADRIL", "G LOMO", "G TAPA DE CUADRIL", "G COLITA DE CUADRIL", "G BIFE ANCHO S/TAPA__MB2", "G BIFE ANGOSTO__MB2", "G CORAZON DE CUADRIL__MB2", "G LOMO__MB2", "G TAPA DE CUADRIL__MB2", "G COLITA DE CUADRIL__MB2"], "deg": {"W32": {"G BIFE ANCHO S/TAPA": 1870, "G BIFE ANGOSTO": 9118, "G CORAZON DE CUADRIL": 5379, "G LOMO": 3834, "G TAPA DE CUADRIL": 1810, "G COLITA DE CUADRIL": 3455}, "W33": {"G BIFE ANCHO S/TAPA": 846, "G BIFE ANGOSTO": 8164, "G CORAZON DE CUADRIL": 5636, "G LOMO": 362, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W34": {"G BIFE ANCHO S/TAPA": 581, "G BIFE ANGOSTO": 3898, "G CORAZON DE CUADRIL": 4697}, "W35": {"G BIFE ANCHO S/TAPA": 1882, "G BIFE ANGOSTO": 9518, "G CORAZON DE CUADRIL": 5636, "G LOMO": 829, "G TAPA DE CUADRIL": 3418, "G COLITA DE CUADRIL": 2643}, "W36": {"G BIFE ANCHO S/TAPA": 1768, "G BIFE ANGOSTO": 8564, "G CORAZON DE CUADRIL": 5636, "G LOMO": 2411, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W37": {"G BIFE ANCHO S/TAPA": 6350, "G BIFE ANGOSTO": 10067, "G CORAZON DE CUADRIL": 6200, "G LOMO": 3056, "G TAPA DE CUADRIL": 4211, "G COLITA DE CUADRIL": 3025}, "W38": {"G BIFE ANCHO S/TAPA": 5906, "G BIFE ANGOSTO": 10048, "G CORAZON DE CUADRIL": 5636, "G LOMO": 2617, "G TAPA DE CUADRIL": 228, "G COLITA DE CUADRIL": 351}, "W39": {"G BIFE ANCHO S/TAPA": 8138, "G BIFE ANGOSTO": 9230, "G CORAZON DE CUADRIL": 5730, "G LOMO": 2690, "G TAPA DE CUADRIL": 3892, "G COLITA DE CUADRIL": 2796}, "W40": {"G BIFE ANCHO S/TAPA": 10081, "G BIFE ANGOSTO": 10383, "G CORAZON DE CUADRIL": 5824, "G LOMO": 4531, "G TAPA DE CUADRIL": 3956, "G COLITA DE CUADRIL": 2842}, "W41": {"G BIFE ANCHO S/TAPA": 6427, "G BIFE ANGOSTO": 9062, "G CORAZON DE CUADRIL": 5636, "G LOMO": 4384, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W42": {"G BIFE ANCHO S/TAPA": 3041, "G BIFE ANGOSTO": 8374, "G CORAZON DE CUADRIL": 4697, "G LOMO": 3654, "G TAPA DE CUADRIL": 3190, "G COLITA DE CUADRIL": 2292}, "W43": {"G BIFE ANCHO S/TAPA": 3707, "G BIFE ANGOSTO": 10048, "G CORAZON DE CUADRIL": 5636, "G LOMO": 4384, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W44": {"G BIFE ANCHO S/TAPA": 3707, "G BIFE ANGOSTO": 10048, "G CORAZON DE CUADRIL": 5636, "G LOMO": 4384, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W45": {"G BIFE ANCHO S/TAPA": 3707, "G BIFE ANGOSTO": 10048, "G CORAZON DE CUADRIL": 5636, "G LOMO": 4384, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W46": {"G BIFE ANCHO S/TAPA": 3707, "G BIFE ANGOSTO": 10048, "G CORAZON DE CUADRIL": 5636, "G LOMO": 4384, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W47": {"G BIFE ANCHO S/TAPA": 3707, "G BIFE ANGOSTO": 10048, "G CORAZON DE CUADRIL": 5636, "G LOMO": 4384, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}, "W48": {"G BIFE ANCHO S/TAPA": 3041, "G BIFE ANGOSTO": 8374, "G CORAZON DE CUADRIL": 4697, "G LOMO": 3654, "G TAPA DE CUADRIL": 3190, "G COLITA DE CUADRIL": 2292}, "W49": {"G BIFE ANCHO S/TAPA": 3707, "G BIFE ANGOSTO": 10048, "G CORAZON DE CUADRIL": 5636, "G LOMO": 4384, "G TAPA DE CUADRIL": 3828, "G COLITA DE CUADRIL": 2750}}}, "RUEDA": {"g": {"G BOLA DE LOMO": {"w": {"W32": {"p": 37266, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 426, "f": "CN"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 6977, "f": "MX"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1469, "f": "CL"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 311, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 25093, "f": "CN"}]}, "W33": {"p": 37323, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 7972, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 19164, "f": "CN"}]}, "W34": {"p": 29667, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2991, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W35": {"p": 37323, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W36": {"p": 37323, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 9968, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 3062, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W37": {"p": 37323, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 6977, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1531, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 4373, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W38": {"p": 37323, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2991, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W39": {"p": 37802, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1469, "f": "CL"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 6977, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W40": {"p": 38280, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2991, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W41": {"p": 37323, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 6977, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 2991, "f": ""}]}, "W42": {"p": 29667, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2991, "f": "MX"}]}, "W43": {"p": 37323, "e": []}, "W44": {"p": 37323, "e": []}, "W45": {"p": 37323, "e": []}, "W46": {"p": 37323, "e": []}, "W47": {"p": 37323, "e": []}, "W48": {"p": 29667, "e": []}, "W49": {"p": 37323, "e": []}}, "lv": "W42", "kgu": 4.785, "mb": "MB1"}, "G CUADRADA": {"w": {"W32": {"p": 35435, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 5606, "f": "MX"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1797, "f": "CL"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 309, "f": ""}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 91, "f": "ES"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 27632, "f": "CN"}]}, "W33": {"p": 35490, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 6625, "f": "MX"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 28865, "f": "CN"}]}, "W34": {"p": 28210, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 4081, "f": "MX"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 24129, "f": "CN"}]}, "W35": {"p": 35490, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 35490, "f": "CN"}]}, "W36": {"p": 35490, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 12239, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 2816, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 16084, "f": "CN"}]}, "W37": {"p": 35490, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 7648, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1406, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 4145, "f": ""}]}, "W38": {"p": 35490, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 4081, "f": "MX"}]}, "W39": {"p": 35945, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1797, "f": "CL"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 7648, "f": "MX"}]}, "W40": {"p": 36400, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 4081, "f": "MX"}]}, "W41": {"p": 35490, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 7648, "f": "MX"}]}, "W42": {"p": 28210, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 4081, "f": "MX"}]}, "W43": {"p": 35490, "e": []}, "W44": {"p": 35490, "e": []}, "W45": {"p": 35490, "e": []}, "W46": {"p": 35490, "e": []}, "W47": {"p": 35490, "e": []}, "W48": {"p": 28210, "e": []}, "W49": {"p": 35490, "e": []}}, "lv": "W42", "kgu": 4.55, "mb": "MB1"}, "G NALGA SIN TAPA": {"w": {"W32": {"p": 40466, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 39350, "f": "MX"}, {"p": "GERMANY", "c": "FRITZ VIEH- UND FLEISC", "t": "V", "kg": 52, "f": "DE"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 296, "f": ""}, {"p": "SPAIN", "c": "ELVIDA FOODS S.A", "t": "V", "kg": 125, "f": "ES"}, {"p": "BULGARIA", "c": "Parker-Migliorini Inte", "t": "V", "kg": 499, "f": ""}, {"p": "UKRAINE", "c": "TH HALYTSKA SVIZHYNA L", "t": "V", "kg": 145, "f": ""}]}, "W33": {"p": 40529, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 28712, "f": "MX"}, {"p": "BULGARIA", "c": "Parker-Migliorini Inte", "t": "V", "kg": 11816, "f": ""}]}, "W34": {"p": 32215, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 7519, "f": "MX"}, {"p": "BULGARIA", "c": "Parker-Migliorini Inte", "t": "V", "kg": 24696, "f": ""}]}, "W35": {"p": 40529, "e": [{"p": "BULGARIA", "c": "Parker-Migliorini Inte", "t": "V", "kg": 3726, "f": ""}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 6838, "f": "MY"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 151, "f": "CN"}]}, "W36": {"p": 40529, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 40529, "f": "MX"}]}, "W37": {"p": 40529, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 36248, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 4281, "f": ""}]}, "W38": {"p": 40529, "e": [{"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 494, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 4692, "f": ""}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 35343, "f": "MX"}]}, "W39": {"p": 41048, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 29809, "f": "MX"}]}, "W40": {"p": 41568, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 22561, "f": "MX"}]}, "W41": {"p": 40529, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 27347, "f": "MX"}]}, "W42": {"p": 32215, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 22561, "f": "MX"}]}, "W43": {"p": 40529, "e": []}, "W44": {"p": 40529, "e": []}, "W45": {"p": 40529, "e": []}, "W46": {"p": 40529, "e": []}, "W47": {"p": 40529, "e": []}, "W48": {"p": 32215, "e": []}, "W49": {"p": 40529, "e": []}}, "lv": "W42", "kgu": 5.196, "mb": "MB1"}, "G TAPA DE NALGA": {"w": {"W32": {"p": 16939, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 16471, "f": "MX"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 468, "f": "MY"}]}, "W33": {"p": 16965, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 12019, "f": "MX"}, {"p": "MALAYSIA", "c": "MALAYSIA", "t": "C", "kg": 2395, "f": "MY"}, {"p": "CHINA", "c": "China", "t": "C", "kg": 117, "f": "CN"}]}, "W34": {"p": 13485, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3147, "f": "MX"}]}, "W35": {"p": 16965, "e": []}, "W36": {"p": 16965, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 16965, "f": "MX"}]}, "W37": {"p": 16965, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 15173, "f": "MX"}]}, "W38": {"p": 16965, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 14794, "f": "MX"}]}, "W39": {"p": 17182, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 12478, "f": "MX"}]}, "W40": {"p": 17400, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 9444, "f": "MX"}]}, "W41": {"p": 16965, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 11447, "f": "MX"}]}, "W42": {"p": 13485, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 9444, "f": "MX"}]}, "W43": {"p": 16965, "e": []}, "W44": {"p": 16965, "e": []}, "W45": {"p": 16965, "e": []}, "W46": {"p": 16965, "e": []}, "W47": {"p": 16965, "e": []}, "W48": {"p": 13485, "e": []}, "W49": {"p": 16965, "e": []}}, "lv": "W42", "kgu": 2.175, "mb": "MB1"}, "G PECETO": {"w": {"W32": {"p": 17375, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 18, "f": "CN"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2748, "f": "MX"}, {"p": "ITALY", "c": "MFC SRL", "t": "V", "kg": 589, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}, {"p": "UKRAINE", "c": "TH HALYTSKA SVIZHYNA L", "t": "V", "kg": 45, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 13678, "f": "CN"}]}, "W33": {"p": 17402, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3248, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 13857, "f": "CN"}]}, "W34": {"p": 13832, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2001, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 11534, "f": "CN"}]}, "W35": {"p": 17402, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 9638, "f": "CN"}]}, "W36": {"p": 17402, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 6001, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 1517, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}]}, "W37": {"p": 17402, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3750, "f": "MX"}, {"p": "", "c": "Sets Elvida aéreo", "t": "R", "kg": 759, "f": ""}, {"p": "", "c": "Sets M2000 aéreo", "t": "R", "kg": 2186, "f": ""}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}]}, "W38": {"p": 17402, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2001, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}]}, "W39": {"p": 17625, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3750, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}]}, "W40": {"p": 17848, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2001, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}]}, "W41": {"p": 17402, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3750, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 297, "f": ""}]}, "W42": {"p": 13832, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2001, "f": "MX"}]}, "W43": {"p": 17402, "e": []}, "W44": {"p": 17402, "e": []}, "W45": {"p": 17402, "e": []}, "W46": {"p": 17402, "e": []}, "W47": {"p": 17402, "e": []}, "W48": {"p": 13832, "e": []}, "W49": {"p": 17402, "e": []}}, "lv": "W42", "kgu": 2.231, "mb": "MB1"}, "G TORTUGA C/BANANITA": {"w": {"W32": {"p": 14844, "e": [{"p": "CHINA", "c": "SHANGHAI ALL FOOD WIN", "t": "V", "kg": 884, "f": "CN"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2348, "f": "MX"}, {"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1083, "f": "CL"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 4008, "f": "CN"}]}, "W33": {"p": 14867, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 2775, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 5571, "f": "CN"}]}, "W34": {"p": 11817, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1710, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 3587, "f": "CN"}]}, "W35": {"p": 14867, "e": [{"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 8346, "f": "CN"}]}, "W36": {"p": 14867, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 5127, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 3219, "f": "CN"}]}, "W37": {"p": 14867, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3204, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 5142, "f": "CN"}]}, "W38": {"p": 14867, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1710, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}, {"p": "CHINA", "c": "China", "t": "C", "kg": 2630, "f": "CN"}]}, "W39": {"p": 15057, "e": [{"p": "CHILE", "c": "Rendic Hermanos S.A", "t": "V", "kg": 1083, "f": "CL"}, {"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3204, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}]}, "W40": {"p": 15248, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1710, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}]}, "W41": {"p": 14867, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 3204, "f": "MX"}, {"p": "", "c": "SAFW", "t": "R", "kg": 6520, "f": ""}]}, "W42": {"p": 11817, "e": [{"p": "MEXICO", "c": "TIENDAS CHEDRAUI S.A.", "t": "V", "kg": 1710, "f": "MX"}]}, "W43": {"p": 14867, "e": []}, "W44": {"p": 14867, "e": []}, "W45": {"p": 14867, "e": []}, "W46": {"p": 14867, "e": []}, "W47": {"p": 14867, "e": []}, "W48": {"p": 11817, "e": []}, "W49": {"p": 14867, "e": []}}, "lv": "W42", "kgu": 1.906, "mb": "MB1"}, "G GARRON": {"w": {"W32": {"p": 25147, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 25147, "f": "CN"}]}, "W33": {"p": 25186, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 25186, "f": "CN"}]}, "W34": {"p": 20020, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 20020, "f": "CN"}]}, "W35": {"p": 25186, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 25186, "f": "CN"}]}, "W36": {"p": 25186, "e": [{"p": "CHINA", "c": "China", "t": "C", "kg": 8851, "f": "CN"}]}, "W37": {"p": 25186, "e": []}, "W38": {"p": 25186, "e": []}, "W39": {"p": 25509, "e": []}, "W40": {"p": 25832, "e": []}, "W41": {"p": 25186, "e": []}, "W42": {"p": 20020, "e": []}, "W43": {"p": 25186, "e": []}, "W44": {"p": 25186, "e": []}, "W45": {"p": 25186, "e": []}, "W46": {"p": 25186, "e": []}, "W47": {"p": 25186, "e": []}, "W48": {"p": 20020, "e": []}, "W49": {"p": 25186, "e": []}}, "lv": "W36", "kgu": 3.229, "mb": "MB1"}}, "go": ["G BOLA DE LOMO", "G CUADRADA", "G NALGA SIN TAPA", "G TAPA DE NALGA", "G PECETO", "G TORTUGA C/BANANITA", "G GARRON"]}};
+const CNAMES = ["TIENDAS CHEDRAUI S.A. DE C.V.", "MEAT 2000 FLEISCHHANDELSGES.MBH", "ELVIDA FOODS S.A", "Bulgaria Congelado", "SHANGHAI ALL FOOD WIN CO., LTD", "Rendic Hermanos S.A", "ORLEANS INTERNATIONAL INC", "PRIME CATER COMERCIAL DE PRODUTOS A", "FRITZ VIEH- UND FLEISCHHANDELS GMBH", "OREGON FOODS SAC", "Lucky Frozen Sdn Bhd", "Worldclass.com LLC", "TH HALYTSKA SVIZHYNA LLC", "Germany Congelado", "Ukraine Congelado", "Food Source International", "OSIRIS FOOD LIMITED", "FOODIE MARKET PLACE PTE. LTD.", "MFC SRL", "Hong Kong Congelado", "FOOD SOURCE INTERNATIONAL (VIET NAM", "INDOGUNA", "WIDAM FOOD CO.(QSC)"];
+const CLI = [{"pais": "MEXICO", "flag": "MX", "kg": 661300, "tipo": "enfriado", "solapas": {"RUEDA": {"kg": 661300, "gens": [{"g": "G NALGA DE ADENTRO", "kg": 454300, "sem": {"32": 44000, "33": 36000, "34": 7700, "35": 42000, "36": 11000, "38": 72300, "39": 40000, "40": 55000, "41": 40300, "42": 33000, "43": 40000, "44": 33000}, "temp": "Enfriado"}, {"g": "G NALGA DE AFUERA C/TORTUGUITA", "kg": 125000, "sem": {"33": 5000, "34": 6000, "35": 13000, "36": 8000, "38": 24000, "39": 15000, "40": 8000, "41": 15000, "42": 8000, "43": 15000, "44": 8000}, "temp": "Enfriado"}, {"g": "G BOLA DE LOMO", "kg": 58000, "sem": {"33": 3000, "34": 4000, "35": 8000, "36": 3000, "38": 10000, "39": 7000, "40": 3000, "41": 7000, "42": 3000, "43": 7000, "44": 3000}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 7900, "sem": {"34": 1400, "35": 1300, "38": 1300, "39": 1300, "41": 1300, "43": 1300}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 6000, "sem": {"34": 1000, "35": 1000, "38": 1000, "39": 1000, "41": 1000, "43": 1000}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 6000, "sem": {"34": 1000, "35": 1000, "38": 1000, "39": 1000, "41": 1000, "43": 1000}, "temp": "Enfriado"}, {"g": "G SHORT RIBS 7C", "kg": 2400, "sem": {"34": 400, "35": 400, "38": 400, "39": 400, "41": 400, "43": 400}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO GRANDE", "kg": 1200, "sem": {"34": 300, "35": 300, "39": 300, "43": 300}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 500, "sem": {"34": 500}, "temp": "Enfriado"}]}}}, {"pais": "GERMANY", "flag": "DE", "kg": 75400, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 44000, "gens": [{"g": "G BIFE ANGOSTO", "kg": 20000, "sem": {"33": 20000}, "temp": "Enfriado"}, {"g": "G CORAZON DE CUADRIL", "kg": 12000, "sem": {"33": 12000}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 8000, "sem": {"33": 8000}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 4000, "sem": {"33": 4000}, "temp": "Enfriado"}]}, "R&L HILTON": {"kg": 31400, "gens": [{"g": "G BIFE ANGOSTO", "kg": 16000, "sem": {"33": 8000, "35": 8000}, "temp": "Enfriado"}, {"g": "G CORAZON DE CUADRIL", "kg": 8400, "sem": {"33": 4200, "35": 4200}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 5600, "sem": {"33": 2800, "35": 2800}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 1400, "sem": {"33": 700, "35": 700}, "temp": "Enfriado"}]}}}, {"pais": "GREECE", "flag": "GR", "kg": 67560, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 24000, "gens": [{"g": "G COLITA DE CUADRIL", "kg": 12000, "sem": {"34": 12000}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 10000, "sem": {"34": 10000}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 2000, "sem": {"33": 2000}, "temp": "Enfriado"}]}, "R&L HILTON": {"kg": 24000, "gens": [{"g": "G TAPA DE CUADRIL", "kg": 15000, "sem": {"32": 6000, "36": 9000}, "temp": "Enfriado"}, {"g": "G COLITA DE CUADRIL", "kg": 9000, "sem": {"32": 3000, "36": 6000}, "temp": "Enfriado"}]}, "RUEDA": {"kg": 19560, "gens": [{"g": "G NALGA SIN TAPA", "kg": 2200, "sem": {"34": 2200}, "temp": "Enfriado"}, {"g": "G AGUJA", "kg": 2120, "sem": {"34": 2120}, "temp": "Enfriado"}, {"g": "G BOLA DE LOMO", "kg": 2020, "sem": {"34": 2020}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 1900, "sem": {"34": 1900}, "temp": "Enfriado"}, {"g": "G CUADRADA", "kg": 1880, "sem": {"34": 1880}, "temp": "Enfriado"}, {"g": "G CARNAZA DE PALETA", "kg": 1680, "sem": {"34": 1680}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 1460, "sem": {"34": 1460}, "temp": "Enfriado"}, {"g": "G CORAZON DE CUADRIL", "kg": 1060, "sem": {"34": 1060}, "temp": "Enfriado"}, {"g": "G PECETO", "kg": 940, "sem": {"34": 940}, "temp": "Enfriado"}, {"g": "G MARUCHA", "kg": 920, "sem": {"34": 920}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 800, "sem": {"34": 800}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO GRANDE", "kg": 640, "sem": {"34": 640}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 600, "sem": {"34": 600}, "temp": "Enfriado"}, {"g": "G COLITA DE CUADRIL", "kg": 520, "sem": {"34": 520}, "temp": "Enfriado"}, {"g": "G CHINGOLO", "kg": 520, "sem": {"34": 520}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO CHICO", "kg": 300, "sem": {"34": 300}, "temp": "Enfriado"}]}}}, {"pais": "BULGARIA", "flag": "", "kg": 50000, "tipo": "congelado", "clientes": ["Parker-Migliorini International (Bu"], "solapas": {"RUEDA": {"kg": 50000, "gens": [{"g": "G NALGA SIN TAPA", "kg": 50000, "sem": {"37": 25000, "39": 25000}, "temp": "Congelado"}]}}}, {"pais": "CHINA", "flag": "CN", "kg": 43200, "tipo": "enfriado", "solapas": {"RUEDA": {"kg": 43200, "gens": [{"g": "G TORTUGA C/BANANITA", "kg": 15000, "sem": {"32": 7500, "33": 7500}, "temp": "Enfriado"}, {"g": "G BRAZUELO", "kg": 6000, "sem": {"32": 3000, "33": 3000}, "temp": "Enfriado"}, {"g": "G BOLA DE LOMO", "kg": 6000, "sem": {"32": 3000, "33": 3000}, "temp": "Enfriado"}, {"g": "G AGUJA", "kg": 5400, "sem": {"32": 2700, "33": 2700}, "temp": "Enfriado"}, {"g": "G MARUCHA", "kg": 5000, "sem": {"32": 2500, "33": 2500}, "temp": "Enfriado"}, {"g": "G CHINGOLO", "kg": 3200, "sem": {"32": 1600, "33": 1600}, "temp": "Enfriado"}, {"g": "G CONICO", "kg": 800, "sem": {"32": 400, "33": 400}, "temp": "Enfriado"}, {"g": "G PECETO", "kg": 800, "sem": {"32": 400, "33": 400}, "temp": "Enfriado"}, {"g": "G ENTRECOSTILLA", "kg": 400, "sem": {"32": 200, "33": 200}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 400, "sem": {"32": 200, "33": 200}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 200, "sem": {"32": 100, "33": 100}, "temp": "Enfriado"}]}}}, {"pais": "CHILE", "flag": "CL", "kg": 40060, "tipo": "enfriado", "solapas": {"RUEDA": {"kg": 40060, "gens": [{"g": "G BIFE ANGOSTO", "kg": 4700, "sem": {"34": 2350, "41": 2350}, "temp": "Enfriado"}, {"g": "G AGUJA", "kg": 4400, "sem": {"34": 2200, "41": 2200}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 4300, "sem": {"34": 2150, "41": 2150}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 3700, "sem": {"34": 1850, "41": 1850}, "temp": "Enfriado"}, {"g": "G BRISKET POINT END SH", "kg": 3600, "sem": {"34": 1800, "41": 1800}, "temp": "Enfriado"}, {"g": "G CUADRADA", "kg": 3100, "sem": {"34": 1550, "41": 1550}, "temp": "Enfriado"}, {"g": "G BOLA DE LOMO", "kg": 2900, "sem": {"34": 1450, "41": 1450}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 2440, "sem": {"34": 1220, "41": 1220}, "temp": "Enfriado"}, {"g": "G TAPA DE BIFE", "kg": 2300, "sem": {"34": 1150, "41": 1150}, "temp": "Enfriado"}, {"g": "G MARUCHA", "kg": 2300, "sem": {"34": 1150, "41": 1150}, "temp": "Enfriado"}, {"g": "G TAPA DE AGUJA", "kg": 2000, "sem": {"34": 1000, "41": 1000}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO CHICO", "kg": 1680, "sem": {"34": 840, "41": 840}, "temp": "Enfriado"}, {"g": "G TORTUGUITA S/BANANITA", "kg": 1600, "sem": {"34": 800, "41": 800}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 1040, "sem": {"34": 520, "41": 520}, "temp": "Enfriado"}]}}}, {"pais": "UNITED STATES", "flag": "US", "kg": 38000, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 38000, "gens": [{"g": "G ENTRAÑA", "kg": 23000, "sem": {"32": 11000, "34": 12000}, "temp": "Enfriado"}, {"g": "G CORAZON DE CUADRIL", "kg": 7000, "sem": {"32": 3000, "34": 4000}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 5000, "sem": {"32": 5000}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO GRANDE", "kg": 2000, "sem": {"34": 2000}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO CHICO", "kg": 1000, "sem": {"34": 1000}, "temp": "Enfriado"}]}}}, {"pais": "BRAZIL", "flag": "BR", "kg": 37800, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 37800, "gens": [{"g": "G TAPA DE CUADRIL", "kg": 18000, "sem": {"36": 9000, "40": 9000}, "temp": "Enfriado"}, {"g": "G COLITA DE CUADRIL", "kg": 16800, "sem": {"36": 8400, "40": 8400}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 1000, "sem": {"36": 500, "40": 500}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO GRANDE", "kg": 1000, "sem": {"36": 500, "40": 500}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 1000, "sem": {"36": 500, "40": 500}, "temp": "Enfriado"}]}}}, {"pais": "GERMANY", "flag": "DE", "kg": 37300, "tipo": "enfriado", "solapas": {"RUEDA": {"kg": 37300, "gens": [{"g": "G BIFE DE VACIO GRANDE", "kg": 6000, "sem": {"34": 6000}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 5000, "sem": {"34": 5000}, "temp": "Enfriado"}, {"g": "G AGUJA", "kg": 4600, "sem": {"34": 4600}, "temp": "Enfriado"}, {"g": "G NALGA SIN TAPA", "kg": 4500, "sem": {"34": 4500}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO CHICO", "kg": 3500, "sem": {"34": 3500}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 2500, "sem": {"34": 2500}, "temp": "Enfriado"}, {"g": "G COLITA DE CUADRIL", "kg": 2300, "sem": {"34": 2300}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 2000, "sem": {"34": 2000}, "temp": "Enfriado"}, {"g": "G CORAZON DE CUADRIL", "kg": 2000, "sem": {"34": 2000}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 2000, "sem": {"34": 2000}, "temp": "Enfriado"}, {"g": "G MARUCHA", "kg": 1900, "sem": {"34": 1900}, "temp": "Enfriado"}, {"g": "G BRISKET POINT END SH", "kg": 1000, "sem": {"34": 1000}, "temp": "Enfriado"}]}}}, {"pais": "PERU", "flag": "PE", "kg": 36600, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 36600, "gens": [{"g": "G BIFE ANGOSTO", "kg": 15600, "sem": {"32": 7800, "36": 7800}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 8000, "sem": {"32": 4000, "36": 4000}, "temp": "Enfriado"}, {"g": "G COLITA DE CUADRIL", "kg": 4000, "sem": {"32": 1000, "36": 3000}, "temp": "Enfriado"}, {"g": "G CORAZON DE CUADRIL", "kg": 3500, "sem": {"32": 2000, "36": 1500}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 3000, "sem": {"32": 1500, "36": 1500}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 2500, "sem": {"32": 500, "36": 2000}, "temp": "Enfriado"}]}}}, {"pais": "MALAYSIA", "flag": "MY", "kg": 22070, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 22070, "gens": [{"g": "G BIFE ANGOSTO", "kg": 9000, "sem": {"32": 3000, "33": 4000, "36": 2000}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 8000, "sem": {"32": 2000, "33": 2000, "36": 4000}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 3070, "sem": {"32": 1270, "33": 1000, "36": 800}, "temp": "Enfriado"}, {"g": "G NALGA DE ADENTRO", "kg": 500, "sem": {"32": 500}, "temp": "Enfriado"}, {"g": "G CUADRADA", "kg": 500, "sem": {"32": 500}, "temp": "Enfriado"}, {"g": "G BOLA DE LOMO", "kg": 500, "sem": {"32": 500}, "temp": "Enfriado"}, {"g": "G CARNAZA DE PALETA", "kg": 500, "sem": {"32": 500}, "temp": "Enfriado"}]}}}, {"pais": "UNITED STATES", "flag": "US", "kg": 18800, "tipo": "enfriado", "solapas": {"ASADO": {"kg": 18800, "gens": [{"g": "G LOMO", "kg": 6900, "sem": {"34": 2300, "35": 2300, "36": 2300}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 4800, "sem": {"34": 1600, "35": 1600, "36": 1600}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 3900, "sem": {"34": 1300, "35": 1300, "36": 1300}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 3000, "sem": {"34": 1000, "35": 1000, "36": 1000}, "temp": "Enfriado"}, {"g": "G SHORT RIBS 3C SH", "kg": 100, "sem": {"34": 100}, "temp": "Enfriado"}, {"g": "G CHUCK SHORT RIBS 4C SH", "kg": 100, "sem": {"34": 100}, "temp": "Enfriado"}]}}}, {"pais": "UKRAINE", "flag": "", "kg": 15000, "tipo": "enfriado", "solapas": {"RUEDA": {"kg": 15000, "gens": [{"g": "G TAPA DE CUADRIL", "kg": 3000, "sem": {"39": 3000}, "temp": "Madurado"}, {"g": "G BRISKET POINT END SH", "kg": 2000, "sem": {"39": 2000}, "temp": "Madurado"}, {"g": "G BIFE ANGOSTO", "kg": 2000, "sem": {"39": 2000}, "temp": "Madurado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 1900, "sem": {"39": 1900}, "temp": "Madurado"}, {"g": "G CORAZON DE CUADRIL", "kg": 1700, "sem": {"39": 1700}, "temp": "Madurado"}, {"g": "G NALGA SIN TAPA", "kg": 1500, "sem": {"39": 1500}, "temp": "Madurado"}, {"g": "G LOMO", "kg": 1200, "sem": {"39": 1200}, "temp": "Madurado"}, {"g": "G PECETO", "kg": 500, "sem": {"39": 500}, "temp": "Madurado"}, {"g": "G BIFE DE VACIO GRANDE", "kg": 400, "sem": {"39": 400}, "temp": "Madurado"}, {"g": "G BIFE DE VACIO CHICO", "kg": 400, "sem": {"39": 400}, "temp": "Madurado"}, {"g": "G CHINGOLO", "kg": 400, "sem": {"39": 400}, "temp": "Madurado"}]}}}, {"pais": "GERMANY", "flag": "DE", "kg": 11094, "tipo": "congelado", "clientes": ["MEAT 2000 FLEISCHHANDELSGES.MBH"], "solapas": {"R&L W": {"kg": 11094, "gens": [{"g": "G TAPA DE ASADO", "kg": 3045, "sem": {"33": 3045}, "temp": "Congelado"}, {"g": "G AGUJA", "kg": 2921, "sem": {"33": 2921}, "temp": "Congelado"}, {"g": "G CARNAZA DE PALETA", "kg": 2309, "sem": {"33": 2309}, "temp": "Congelado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 2006, "sem": {"33": 2006}, "temp": "Congelado"}, {"g": "G TAPA DE CUADRIL", "kg": 813, "sem": {"33": 813}, "temp": "Congelado"}]}}}, {"pais": "UKRAINE", "flag": "", "kg": 10000, "tipo": "congelado", "clientes": ["TH HALYTSKA SVIZHYNA LLC"], "solapas": {"RUEDA": {"kg": 10000, "gens": [{"g": "G LENGUA", "kg": 10000, "sem": {"39": 10000}, "temp": "Congelado"}]}}}, {"pais": "UNITED ARAB EMIRATES", "flag": "AE", "kg": 9826, "tipo": "enfriado", "solapas": {"ASADO": {"kg": 6776, "gens": [{"g": "G LOMO", "kg": 2000, "sem": {"32": 2000}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 1900, "sem": {"32": 1900}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 1100, "sem": {"32": 1100}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 650, "sem": {"32": 650}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 350, "sem": {"32": 350}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO GRANDE", "kg": 230, "sem": {"32": 230}, "temp": "Enfriado"}, {"g": "G TOMAHAWK", "kg": 225, "sem": {"32": 225}, "temp": "Enfriado"}, {"g": "G VACIO", "kg": 200, "sem": {"32": 200}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO CON HUESO Y LOMO", "kg": 110, "sem": {"32": 110}, "temp": "Enfriado"}, {"g": "G CABEZA DE LOMO", "kg": 11, "sem": {"32": 11}, "temp": "Enfriado"}]}, "R&L W": {"kg": 3050, "gens": [{"g": "G LOMO", "kg": 1000, "sem": {"35": 1000}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 1000, "sem": {"35": 1000}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 600, "sem": {"35": 600}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 250, "sem": {"35": 250}, "temp": "Enfriado"}, {"g": "G TOMAHAWK", "kg": 200, "sem": {"35": 200}, "temp": "Enfriado"}]}}}, {"pais": "HONG KONG", "flag": "HK", "kg": 8700, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 8700, "gens": [{"g": "G BIFE ANGOSTO", "kg": 3600, "sem": {"34": 1000, "35": 2600}, "temp": "Enfriado + Madurado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 2500, "sem": {"34": 1500, "35": 1000}, "temp": "Enfriado + Madurado"}, {"g": "G NUEZ DE QUIJADA", "kg": 1500, "sem": {"35": 1500}, "temp": "Madurado"}, {"g": "G ENTRAÑA C", "kg": 800, "sem": {"34": 800}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO C/HUESO S/TAPA", "kg": 200, "sem": {"34": 200}, "temp": "Enfriado"}, {"g": "G TOMAHAWK", "kg": 100, "sem": {"34": 100}, "temp": "Enfriado"}]}}}, {"pais": "SINGAPORE", "flag": "SG", "kg": 5095, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 5095, "gens": [{"g": "G MARUCHA", "kg": 1200, "sem": {"34": 600, "37": 600}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 1100, "sem": {"34": 200, "37": 900}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 950, "sem": {"34": 400, "37": 550}, "temp": "Enfriado"}, {"g": "G CONICO", "kg": 900, "sem": {"34": 500, "37": 400}, "temp": "Enfriado"}, {"g": "G TAPA DE CUADRIL", "kg": 575, "sem": {"34": 225, "37": 350}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 250, "sem": {"37": 250}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO CON HUESO Y LOMO", "kg": 110, "sem": {"34": 110}, "temp": "Enfriado"}, {"g": "G CABEZA DE LOMO", "kg": 10, "sem": {"34": 10}, "temp": "Enfriado"}]}}}, {"pais": "ITALY", "flag": "", "kg": 4800, "tipo": "enfriado", "solapas": {"PECHO": {"kg": 600, "gens": [{"g": "G AGUJA", "kg": 600, "sem": {"34": 600}, "temp": "Enfriado"}]}, "RUEDA": {"kg": 4200, "gens": [{"g": "G TAPA DE CUADRIL", "kg": 700, "sem": {"34": 700}, "temp": "Enfriado"}, {"g": "G PECETO", "kg": 500, "sem": {"34": 500}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 500, "sem": {"34": 500}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 450, "sem": {"34": 450}, "temp": "Enfriado"}, {"g": "G COLITA DE CUADRIL", "kg": 400, "sem": {"34": 400}, "temp": "Enfriado"}, {"g": "G BOLA DE LOMO", "kg": 300, "sem": {"34": 300}, "temp": "Enfriado"}, {"g": "G CUADRADA", "kg": 300, "sem": {"34": 300}, "temp": "Enfriado"}, {"g": "G NALGA SIN TAPA", "kg": 300, "sem": {"34": 300}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 300, "sem": {"34": 300}, "temp": "Enfriado"}, {"g": "G CORAZON DE CUADRIL", "kg": 270, "sem": {"34": 270}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 180, "sem": {"34": 180}, "temp": "Enfriado"}]}}}, {"pais": "HONG KONG", "flag": "HK", "kg": 2600, "tipo": "congelado", "clientes": ["OSIRIS FOOD LIMITED"], "solapas": {"R&L W": {"kg": 2600, "gens": [{"g": "G CENTRO DE ENTRAÑA", "kg": 1200, "sem": {"35": 1200}, "temp": "Congelado"}, {"g": "G H.PATA", "kg": 600, "sem": {"35": 600}, "temp": "Congelado"}, {"g": "G LENGUA", "kg": 400, "sem": {"35": 400}, "temp": "Congelado"}, {"g": "G ENTRAÑA FINA", "kg": 300, "sem": {"35": 300}, "temp": "Congelado"}, {"g": "G MOLLEJA", "kg": 100, "sem": {"35": 100}, "temp": "Congelado"}]}}}, {"pais": "VIETNAM", "flag": "VN", "kg": 2230, "tipo": "enfriado", "solapas": {"PECHO": {"kg": 2230, "gens": [{"g": "G BIFE ANCHO S/TAPA", "kg": 620, "sem": {"35": 620}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 600, "sem": {"35": 600}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 250, "sem": {"35": 250}, "temp": "Enfriado"}, {"g": "G MARUCHA", "kg": 250, "sem": {"35": 250}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 190, "sem": {"35": 190}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO GRANDE", "kg": 120, "sem": {"35": 120}, "temp": "Enfriado"}, {"g": "G BIFE DE VACIO CHICO", "kg": 120, "sem": {"35": 120}, "temp": "Enfriado"}, {"g": "G ENTRAÑA C", "kg": 80, "sem": {"35": 80}, "temp": "Enfriado"}]}}}, {"pais": "SINGAPORE", "flag": "SG", "kg": 2060, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 2060, "gens": [{"g": "G BIFE ANGOSTO", "kg": 900, "sem": {"34": 900}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 800, "sem": {"34": 800}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 200, "sem": {"34": 200}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO C/HUESO S/TAPA", "kg": 140, "sem": {"34": 140}, "temp": "Enfriado"}, {"g": "G ENTRAÑA FINA", "kg": 20, "sem": {"34": 20}, "temp": "Enfriado"}]}}}, {"pais": "QATAR", "flag": "", "kg": 1430, "tipo": "enfriado", "solapas": {"R&L W": {"kg": 1430, "gens": [{"g": "G TAPA DE CUADRIL", "kg": 1050, "sem": {"35": 1050}, "temp": "Enfriado"}, {"g": "G BIFE ANCHO S/TAPA", "kg": 160, "sem": {"35": 160}, "temp": "Enfriado"}, {"g": "G BIFE ANGOSTO", "kg": 120, "sem": {"35": 120}, "temp": "Enfriado"}, {"g": "G LOMO", "kg": 100, "sem": {"35": 100}, "temp": "Enfriado"}]}}}];
+
+</script>
+<script>
+const CV='#27ae60', CR='#e67e22', CN_='#c0392b', CMX='#1a7a4a';
+const CPART='#f1c40f';
+const CNF='#d35400';
+const FE={CN:'🇨🇳',HK:'🇭🇰',MY:'🇲🇾',PH:'🇵🇭',VN:'🇻🇳',SG:'🇸🇬',US:'🇺🇸',MX:'🇲🇽',PE:'🇵🇪',CL:'🇨🇱',BR:'🇧🇷',EC:'🇪🇨',DE:'🇩🇪',PT:'🇵🇹',ES:'🇪🇸',GR:'🇬🇷',CH:'🇨🇭',IL:'🇮🇱',EG:'🇪🇬',AE:'🇦🇪',LA:'🇱🇦',TH:'🇹🇭'};
+const SC={ASADO:'#C0392B',PECHO:'#1A5276','R&L HILTON':'#1E8449','R&L W':'#8B6914',RUEDA:'#6C3483','RUEDA VACA':'#784212'};
+const fmt=n=>Math.round(n).toLocaleString('es-AR');
+const fmtK=n=>`${(n/1000).toFixed(0)}k kg`;
+const fmtT=kg=>(kg/1000).toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const kK=n=>Math.round(n/1000).toLocaleString('es-AR')+'k';
+const UKG='<span class="u">kilos</span>';
+const UUN='<span class="u">unidades</span>';
+const CUOTA_USA={fecha:'09-06',asignada:1250002,certif:776639,cargado_pend:24633,orleans_vendido:33000,cuadriles_vendido:66000,wc_proyectado:181000};
+const fe=f=>FE[f]||'';
+const WK=[];for(let i=25;i<=44;i++)WK.push(i);
+// Semana ISO en curso (para cortar la visual a 9 semanas)
+function curWeek(){const d=new Date();const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const ys=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil((((t-ys)/86400000)+1)/7);}
+const FALTA_SPAN=9; // semanas visibles desde la semana en curso
+
+function celCol(es,p){
+  // Color por % COLOCADO = (venta + pool + reserva) / produccion. Verde solo si casi no sobra.
+  const asign=es?es.reduce((a,e)=>a+e.kg,0):0;
+  if(p>0){
+    const pct=asign/p;
+    if(pct>=0.95) return CV;     // falta <=5%   -> verde (colocado)
+    if(pct>=0.70) return CPART;  // falta 5-30%  -> amarillo
+    if(pct>=0.40) return CNF;    // falta 30-60% -> naranja fuerte
+    return CN_;                  // falta +60%   -> rojo
+  }
+  if(!es||!es.length) return CN_;
+  return CV;                     // sin produccion pero con algo asignado
+}
+
+function tempBadge(temp){
+  if(!temp) return '';
+  const bg=temp==='Congelado'?'#1a3a5c':temp==='Madurado'?'#6C3483':temp.includes('Congelado')&&temp.includes('Enfriado')?'#e67e22':'#1E8449';
+  return `<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;color:#fff;background:${bg}">${temp}</span>`;
+}
+
+
+let mode='sol', curSol='ASADO', curGenIdx=-1, curCliIdx=-1, openGenKey='', mbF='both', srch='';
+let faltaFrom=26, faltaSol='Todas', faltaRank=[], faltaGen=null, faltaRes=true, faltaPieType='V', faltaPieWeek=null;
+const PIE_COLORS=['#1a5276','#c0392b','#1e8449','#8b6914','#6c3483','#16a085','#d35400','#2980b9','#c0392b','#27ae60','#7d6608','#884ea0','#117864','#a04000','#2471a3','#cb4335'];
+const SNAMES=Object.keys(SOL);
+
+function visG(s){
+  const sol=s||curSol;
+  if(sol!=='R&L W') return SOL[sol].go;
+  if(mbF==='MB1') return SOL[sol].go.filter(g=>!g.includes('__MB2'));
+  if(mbF==='MB2') return SOL[sol].go.filter(g=>g.includes('__MB2'));
+  return SOL[sol].go;
+}
+
+function renderNav(){
+  let h=`<span class="snl">Vista</span>
+    <button class="sp${mode==='sol'?' on':''}" onclick="setMode('sol')">📊 Solapas</button>
+    <button class="sp${mode==='cli'?' con':''}" onclick="setMode('cli')">🏢 Clientes</button>
+    <button class="sp${mode==='481'?' on':''}" onclick="set481()" style="${mode==='481'?'background:#1a5276;border-color:#1a5276;color:#fff':''}">🚢 481</button>
+    <button class="sp${mode==='usa'?' on':''}" onclick="setCuotaUSA()" style="${mode==='usa'?'background:#1a5276;border-color:#1a5276;color:#fff':''}">🇺🇸 Cuota USA</button>
+    <button class="sp${mode==='falta'?' on':''}" onclick="setFalta()" style="${mode==='falta'?'background:#c0392b;border-color:#c0392b;color:#fff':''}">📊 Falta vender</button>
+    <span style="width:1px;background:#2d4f70;height:16px;margin:0 4px"></span><span class="snl">Solapa</span>`;
+  SNAMES.forEach((s,i)=>{
+    const tv=visG(s).reduce((a,g)=>a+Object.values(SOL[s].g[g].w).reduce((b,w)=>b+w.e.filter(e=>e.t==='V').reduce((c,e)=>c+e.kg,0),0),0);
+    h+=`<button class="sp${mode==='sol'&&s===curSol?' on':''}" onclick="selSol(${i})">${s}<span style="opacity:.45;font-size:10px"> ${(tv/1000).toFixed(0)}k</span></button>`;
+  });
+  document.getElementById('snav').innerHTML=h;
+}
+
+function renderMBF(){ /* panel lateral eliminado; el filtro MB1/MB2 se renderiza en el área principal (ver mbBarHTML) */ }
+function mbBarHTML(){
+  if(!(curSol==='R&L W'&&mode==='sol')) return '';
+  return `<div class="mbfrow" style="margin-bottom:10px;border:1px solid #e1e8ef;border-radius:8px;border-bottom:1px solid #e1e8ef">
+    <span style="font-size:10px;color:#888;font-weight:600">Cuarterio:</span>
+    <button class="mbt${mbF==='both'?' on':''}" style="${mbF==='both'?'background:#8B6914':''}" onclick="setMB('both')">MB1+MB2</button>
+    <button class="mbt${mbF==='MB1'?' on':''}" style="${mbF==='MB1'?'background:#2471A3':''}" onclick="setMB('MB1')">MB1</button>
+    <button class="mbt${mbF==='MB2'?' on':''}" style="${mbF==='MB2'?'background:#6C3483':''}" onclick="setMB('MB2')">MB2</button>
+  </div>`;
+}
+
+function renderSb(){ /* panel lateral eliminado del proyecto; la navegación vive en las tarjetas del área principal */ }
+
+function renderMain(){
+  if(mode==='481'){ render481(); return; }
+  if(mode==='usa'){ renderCuotaUSA(); return; }
+  if(mode==='falta'){ renderFalta(); return; }
+  if(mode==='cli') curCliIdx>=0?renderCliDet():renderCliOv();
+  else curGenIdx>=0?renderGenDet():renderSolOv();
+}
+
+function renderSolOv(){
+  const gens=visG(), sol=SOL[curSol], color=SC[curSol]||'#1a3a5c';
+  const totV=gens.reduce((a,g)=>a+Object.values(sol.g[g].w).reduce((b,w)=>b+w.e.filter(e=>e.t==='V').reduce((c,e)=>c+e.kg,0),0),0);
+  const totR=gens.reduce((a,g)=>a+Object.values(sol.g[g].w).reduce((b,w)=>b+w.e.filter(e=>e.t==='R').reduce((c,e)=>c+e.kg,0),0),0);
+  const totP=gens.reduce((a,g)=>a+Object.values(sol.g[g].w).reduce((b,w)=>b+w.p,0),0);
+  const pct=totP>0?Math.round(totV/totP*100):0;
+  const cards=gens.map((g,i)=>{
+    const gd=sol.g[g];
+    const tv=Object.values(gd.w).reduce((a,w)=>a+w.e.filter(e=>e.t==='V').reduce((b,e)=>b+e.kg,0),0);
+    const lv=gd.lv?parseInt(gd.lv.slice(1)):null;
+    const hasR=Object.values(gd.w).some(w=>w.e.some(e=>e.t==='R'));
+    const isMB2=g.includes('__MB2');
+    const cells=WK.map(wn=>{const wd=gd.w[`W${wn}`];return`<div class="mw" style="background:${wd?celCol(wd.e,wd.p):CN_}" title="W${wn}${wd?' prod:'+fmt(wd.p)+'kg':''}"></div>`;}).join('');
+    return`<div class="oc" onclick="selGen(${i})">
+      <div class="ocn">${g.replace(/^G /,'').replace('__MB2','')}${isMB2?` <span class="mb-tag" style="background:#6C3483;color:#fff">MB2</span>`:''}${hasR?` <span style="color:#e67e22;font-size:9px">●</span>`:''}</div>
+      <div class="ocm">${fmtK(tv)} · ${lv?`hasta W${lv}`:'sin ventas'}</div>
+      <div class="mwg">${cells}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('main').innerHTML=`
+    ${mbBarHTML()}
+    <div class="kr">
+      <div class="kpi"><div class="kn" style="color:${color}">${kK(totP)}${UKG}</div><div class="kl">Producción</div></div>
+      <div class="kpi"><div class="kn" style="color:${CV}">${kK(totV)}${UKG}</div><div class="kl">Vendido</div></div>
+      ${totR>0?`<div class="kpi"><div class="kn" style="color:${CR}">${kK(totR)}${UKG}</div><div class="kl">Reservado</div></div>`:''}
+      <div class="kpi"><div class="kn">${pct}%</div><div class="kl">Asignado</div></div>
+    </div>
+    <div class="lg">
+      <div class="li"><div class="ld" style="background:${CV}"></div>Colocado (falta ≤5%)</div>
+      <div class="li"><div class="ld" style="background:${CPART}"></div>Falta 5–30%</div>
+      <div class="li"><div class="ld" style="background:${CNF}"></div>Falta 30–60%</div>
+      <div class="li"><div class="ld" style="background:${CN_}"></div>Falta +60%</div>
+    </div>
+    <div class="sc">Genéricos — clic para ver destinos semana a semana</div>
+    <div class="og">${cards}</div>`;
+}
+
+function renderGenDet(){
+  const g=visG()[curGenIdx]; if(!g) return;
+  const gd=SOL[curSol].g[g];
+  const isMB2=g.includes('__MB2');
+  const lv=gd.lv?parseInt(gd.lv.slice(1)):null;
+  const tv=Object.values(gd.w).reduce((a,w)=>a+w.e.filter(e=>e.t==='V').reduce((b,e)=>b+e.kg,0),0);
+  const tp=Object.values(gd.w).reduce((a,w)=>a+w.p,0);
+  const cells=WK.map(wn=>{
+    const wd=gd.w[`W${wn}`],bg=wd?celCol(wd.e,wd.p):CN_;
+    const tip=wd?`W${wn} | prod: ${fmt(wd.p)}kg | `+wd.e.map(e=>`${e.p||e.c} ${fmt(e.kg)}kg`).join(' | '):`W${wn}`;
+    return`<div class="wc" style="background:${bg};${lv===wn?'outline:2px solid #333;outline-offset:1px':''}" title="${tip}">${wn}</div>`;
+  }).join('');
+  const rows=WK.map(wn=>{
+    const wd=gd.w[`W${wn}`]; if(!wd) return '';
+    const past=lv&&wn>lv;
+    const vendido=wd.e.reduce((a,e)=>a+e.kg,0);
+    const saldo=wd.p-vendido;
+    const pct=wd.p>0?Math.round(vendido/wd.p*100):0;
+    const pills=wd.e.map(e=>{
+      const tc=e.t==='R'?CR:CV;
+      const tag=e.t==='R'?' RES':e.t==='C'?' POOL':'';
+      return`<span class="ep" style="background:${e.t==='R'?'rgba(230,126,34,.12)':'rgba(39,174,96,.12)'};color:${tc}">${e.f?`${fe(e.f)} `:''}${(e.p||e.c||'Menaker').slice(0,18)} <b>${fmt(e.kg)}kg</b><span style="opacity:.5;font-size:9px">${tag}</span></span>`;
+    }).join('');
+    const barColor=pct===0?CN_:pct<50?'#e67e22':pct<90?CV:CV;
+    const alertaHtml=saldo>0&&wd.p>0?`
+      <div style="display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:5px;font-size:10px;font-weight:600;margin-top:4px;background:${pct===0?'rgba(192,57,43,.1)':'rgba(230,126,34,.1)'};color:${pct===0?'#922b21':'#b7600a'};border:0.5px solid ${pct===0?'rgba(192,57,43,.35)':'rgba(230,126,34,.35)'}">
+        <i class="ti ti-alert-triangle" style="font-size:13px" aria-hidden="true"></i>
+        <span><b>${fmt(saldo)} kg sin asignar</b> &mdash; ${pct}% vendido</span>
+      </div>`:'';
+    return`<div class="wdr" style="${past?'opacity:.3':''}${saldo>wd.p*.5&&!past?'background:rgba(192,57,43,.03);border-radius:5px':''}" >
+      <div class="wds">W${wn}</div>
+      <div style="width:68px;flex-shrink:0;padding-top:2px">
+        <div style="font-size:10px;color:var(--color-text-secondary)">${wd.p?fmt(wd.p)+'kg':'—'}</div>
+        ${wd.p>0?`<div style="height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden;margin-top:2px"><div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px"></div></div>`:''}
+      </div>
+      <div class="wde" style="flex:1">
+        ${pills||(wd.p>0?`<span style="font-size:10px;color:${CN_};font-weight:600">sin venta asignada</span>`:'')}
+        ${alertaHtml}
+      </div>
+      ${saldo>0&&wd.p>0?`<div style="font-size:11px;font-weight:700;color:${pct<50?CN_:'#e67e22'};white-space:nowrap;padding-top:2px">+${fmt(saldo)}</div>`:''}
+    </div>`;
+  }).filter(Boolean).join('');
+  document.getElementById('main').innerHTML=`
+    <button class="bk" onclick="selGen(-1)">← ${curSol}</button>
+    <div class="dc">
+      <div class="dn">${g.replace(/^G /,'').replace('__MB2','')}${isMB2?` <span class="mb-tag" style="background:#6C3483;color:#fff">MB2</span>`:''} <span style="font-size:12px;color:#aaa;font-weight:400">· ${gd.kgu} kg/unid</span></div>
+      <div class="ds">${curSol} · prod. ${fmtK(tp)} · vendido ${fmtK(tv)} · ${lv?`última venta W${lv}`:'sin ventas'}</div>
+      <div class="wr">${cells}</div>
+      <div class="sc">Semana · producción · destinos</div>
+      <div>${rows}</div>
+    </div>`;
+}
+
+function renderCliOv(){
+  const ks=CNAMES.map((n,i)=>{return{n,i,d:CLI[i]};}).filter(x=>!srch||x.n.toLowerCase().includes(srch)).sort((a,b)=>b.d.kg-a.d.kg);
+  const totKg=ks.reduce((a,x)=>a+x.d.kg,0);
+  const nEnf=ks.filter(x=>x.d.tipo==='enfriado').length;
+  const nCong=ks.filter(x=>x.d.tipo==='congelado').length;
+  const cards=ks.map(x=>{
+    const d=x.d; const isCong=d.tipo==='congelado';
+    const strip=WK.map(wn=>{
+      let hasV=false;
+      for(const sd of Object.values(d.solapas)){
+        for(const gd of sd.gens){if((gd.sem[String(wn)]||0)>0){hasV=true;break;}}
+        if(hasV) break;
+      }
+      return`<div class="mw" style="background:${hasV?CV:CN_}"></div>`;
+    }).join('');
+    const nCli=d.clientes?d.clientes.length:0;
+    return`<div class="cc${x.i===curCliIdx?' on':''}${isCong?' cong-card':''}" onclick="selCli(${x.i})">
+      <div class="ccn">${d.flag?`${fe(d.flag)} `:''}${x.n}</div>
+      <div class="ccp">${d.pais||'—'} · ${isCong?'❄ '+nCli+' clientes':'● Enfriado'}</div>
+      <div style="margin-bottom:5px">${Object.keys(d.solapas).map(s=>`<span class="sbadge" style="background:${SC[s]||'#555'}">${s.replace('R&L ','')}</span>`).join(' ')}</div>
+      <div class="mwg">${strip}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('main').innerHTML=`
+    <div class="kr">
+      <div class="kpi"><div class="kn" style="color:#1a5276">${kK(totKg)}${UKG}</div><div class="kl">Total</div></div>
+      <div class="kpi"><div class="kn">${nEnf}</div><div class="kl">Enfriado</div></div>
+      <div class="kpi"><div class="kn">${nCong}</div><div class="kl">Cong. países</div></div>
+    </div>
+    <div class="lg">
+      <div class="li"><div class="ld" style="background:${CV}"></div>Semana con venta</div>
+      <div class="li"><div class="ld" style="background:${CN_}"></div>Sin venta</div>
+      <div class="li"><span style="border-left:4px solid #1a3a5c;padding-left:5px;font-size:10px">= Congelado agrupado por país</span></div>
+    </div>
+    <div class="sc">Clientes — clic para ver productos y semanas</div>
+    <div class="cg">${cards}</div>`;
+}
+
+function renderCliDet(){
+  const cname=CNAMES[curCliIdx], d=CLI[curCliIdx]; if(!d) return;
+  const isCong=d.tipo==='congelado';
+  const lastWn=Math.max(...Object.values(d.solapas).flatMap(s=>s.gens.flatMap(g=>Object.keys(g.sem).map(Number))));
+  const totalG=Object.values(d.solapas).reduce((a,s)=>a+s.gens.length,0);
+
+  // Si es congelado, mostrar lista de clientes reales al tope
+  const clientesHtml=isCong&&d.clientes?`
+    <div style="margin-bottom:12px;padding:10px 12px;background:#f0f4fa;border-radius:8px;border:1px solid #d0daea">
+      <div style="font-size:10px;font-weight:700;color:#1a3a5c;text-transform:uppercase;margin-bottom:6px">❄ Clientes agrupados (${d.clientes.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${d.clientes.map(c=>`<span style="font-size:10px;background:#fff;border:1px solid #c0d0e0;border-radius:4px;padding:2px 7px;color:#333">${c}</span>`).join('')}</div>
+    </div>`:'';
+
+  const sections=Object.entries(d.solapas).sort((a,b)=>b[1].kg-a[1].kg).map(([sol,sd])=>{
+    const color=SC[sol]||'#555';
+    const genRows=sd.gens.sort((a,b)=>b.kg-a.kg).map((gd,gi)=>{
+      const key=`${curCliIdx}_${sol}_${gi}`;
+      const isOpen=openGenKey===key;
+      const isMB2=gd.g.includes('__MB2');
+      const genBase=gd.g.replace('__MB2','');
+      const short=gd.g.replace(/^G /,'').replace('__MB2',' (MB2)');
+      const solData=SOL[sol]&&SOL[sol].g&&SOL[sol].g[genBase];
+      const strip=WK.map(wn=>{
+        const kgV=gd.sem[String(wn)]||0;
+        const wd=solData&&solData.w[`W${wn}`];
+        const bg=kgV>0?CV:CN_;
+        return`<div class="cwc" style="background:${bg}" title="W${wn}: ${kgV?fmt(kgV)+' kg':'sin venta'}${wd?' | prod: '+fmt(wd.p)+'kg':''}">${wn}</div>`;
+      }).join('');
+      let body='';
+      if(isOpen){
+        const misSems=Object.entries(gd.sem).filter(([,kg])=>kg>0).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));
+        body=`<div class="prbody">
+          <div style="font-size:11px;font-weight:600;margin-bottom:8px;color:#555">W25→W44 — <span style="color:${CV}">■ con venta</span> · <span style="color:${CN_}">■ sin venta</span></div>
+          <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px">${strip}</div>`;
+        if(misSems.length){
+          body+=`<div style="font-size:10px;font-weight:700;margin-bottom:6px;color:#888;text-transform:uppercase">Semanas con venta</div>`;
+          body+=misSems.map(([wn,kg])=>{
+            const wd=solData&&solData.w[`W${wn}`];
+            return`<div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #e8eef4;align-items:center">
+              <span style="font-weight:700;color:#888;width:30px;font-size:11px">W${wn}</span>
+              <span style="color:${CV};font-weight:700;font-size:13px">${fmt(kg)} kg</span>
+              <span style="color:#aaa;font-size:10px">prod. total: ${wd?fmt(wd.p)+'kg':'—'}</span>
+            </div>`;
+          }).join('');
+        }
+        if(solData){
+          body+=`<div style="font-size:10px;font-weight:700;margin:12px 0 6px;color:#888;text-transform:uppercase">Todos los destinos · ${sol} · ${genBase}</div>`;
+          body+=WK.map(wn=>{
+            const wd=solData.w[`W${wn}`]; if(!wd||(!wd.p&&!wd.e.length)) return '';
+            const bg=celCol(wd.e,wd.p);
+            const myKg=gd.sem[String(wn)]||0;
+            const pills=wd.e.map(e=>{
+              const tc=e.t==='R'?CR:CV;
+              const tag=e.t==='R'?' RES':e.t==='C'?' POOL':'';
+              const isMe=myKg>0&&e.t==='V';
+              return`<span class="ep" style="background:${isMe?'rgba(39,174,96,.2)':e.t==='R'?'rgba(230,126,34,.1)':'rgba(39,174,96,.07)'};color:${tc};${isMe?'outline:1.5px solid #27ae60;outline-offset:1px':''}">
+                ${e.f?`${fe(e.f)} `:''}<span>${(e.p||e.c||'Menaker').slice(0,18)}</span> <b>${fmt(e.kg)}kg</b><span style="opacity:.5;font-size:9px">${tag}</span>
+              </span>`;
+            }).join('');
+            return`<div style="display:flex;gap:5px;align-items:flex-start;padding:4px 0;border-bottom:1px solid #f0f4f8">
+              <div style="width:8px;height:8px;border-radius:2px;background:${bg};flex-shrink:0;margin-top:4px"></div>
+              <span style="font-weight:700;color:#888;width:28px;font-size:10px">W${wn}</span>
+              <span style="font-size:10px;color:#aaa;width:62px;flex-shrink:0">${fmt(wd.p)}kg</span>
+              <div style="display:flex;gap:3px;flex-wrap:wrap">${pills||(wd.p>0?`<span style="font-size:10px;color:${CN_};font-weight:600">sin venta</span>`:'')}</div>
+            </div>`;
+          }).filter(Boolean).join('');
+        }
+        body+='</div>';
+      }
+      return`<div class="prc">
+        <div class="prh" onclick="toggleGen('${key}')">
+          <div class="prn">
+            ${isMB2?`<span class="mb-tag" style="background:#6C3483;color:#fff">MB2</span>`:''}
+            ${short}
+            ${tempBadge(gd.temp)}
+          </div>
+          <div class="prmeta"><span style="color:#1a5276;font-weight:700">${fmtK(gd.kg)}</span><span style="font-size:14px">${isOpen?'▲':'▼'}</span></div>
+        </div>
+        ${body}
+      </div>`;
+    }).join('');
+    return`<div>
+      <div class="sol-hdr"><span class="sol-badge" style="background:${color}">${sol}</span><span style="font-size:12px;font-weight:700">${fmtK(sd.kg)}</span></div>
+      ${genRows}
+    </div>`;
+  }).join('');
+
+  document.getElementById('main').innerHTML=`
+    <button class="bk" onclick="selCli(-1)">← Clientes</button>
+    <div class="dc">
+      <div class="dn">${d.flag?`${fe(d.flag)} `:''}${cname} ${isCong?'<span style="font-size:11px;background:#1a3a5c;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600">❄ Congelado</span>':'<span style="font-size:11px;background:#1E8449;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600">● Enfriado</span>'}</div>
+      <div class="ds">${d.pais||'—'} · ${fmtK(d.kg)} · hasta W${lastWn}</div>
+      <div class="kr" style="margin-top:10px">
+        <div class="kpi"><div class="kn" style="color:#1a5276">${kK(d.kg)}${UKG}</div><div class="kl">Total</div></div>
+        <div class="kpi"><div class="kn">${Object.keys(d.solapas).length}</div><div class="kl">Solapas</div></div>
+        <div class="kpi"><div class="kn">${totalG}</div><div class="kl">Productos</div></div>
+        <div class="kpi"><div class="kn">W${lastWn}</div><div class="kl">Último desp.</div></div>
+      </div>
+      ${clientesHtml}
+      <div class="sc" style="margin-top:10px">Productos — clic para ver semanas y detalle de solapa</div>
+      ${sections}
+    </div>`;
+}
+
+function toggleGen(key){ openGenKey=openGenKey===key?'':key; renderCliDet(); }
+function setMode(m){mode=m;curGenIdx=-1;curCliIdx=-1;openGenKey='';srch='';renderNav();renderMBF();renderSb();renderMain();}
+function selSol(i){mode='sol';curSol=SNAMES[i];curGenIdx=-1;mbF='both';renderNav();renderMBF();renderSb();renderMain();}
+function selGen(i){curGenIdx=i;renderSb();renderMain();}
+function selCli(i){curCliIdx=i;openGenKey='';renderSb();renderMain();}
+function setMB(m){mbF=m;curGenIdx=-1;renderMBF();renderSb();renderMain();}
+
+/* ===== Solapa 481 (Marítimo / Aéreo / Full Levy) ===== */
+function set481(){ mode='481'; curSol='R&L W'; curGenIdx=-1; curCliIdx=-1; openGenKey=''; srch=''; const si=document.getElementById('ssi'); if(si) si.value=''; renderNav(); renderMBF(); renderSb(); renderMain(); }
+function modal481(wn){ if(wn>=31&&wn<=33) return ['Marítimo 481','🚢','#27ae60','#fff']; if(wn>=34&&wn<=38) return ['Aéreo 481','✈️','#f1c40f','#1a2a3a']; return ['Full Levy','▫️','#c0392b','#fff']; }
+function render481(){
+  const CUTS=['G BIFE ANGOSTO','G LOMO','G CORAZON DE CUADRIL'];
+  const SETKG=9.5;
+  const sol=SOL['R&L W'];
+  // saldo (kg) = produccion - todo lo asignado (V+C+R); unidades = saldo / kg-por-unidad
+  function unidades(cut,wn){
+    const gd=sol.g[cut]; if(!gd) return 0;
+    const wd=gd.w['W'+wn]; if(!wd) return 0;
+    const asign=wd.e.reduce((a,e)=>a+e.kg,0);
+    const saldo=Math.max(0, wd.p-asign);
+    return gd.kgu>0 ? Math.round(saldo/gd.kgu) : 0;
+  }
+  let totU=[0,0,0], totComp=0, totSets=0;
+  const WK481=WK.filter(w=>w>=29);
+  const rows=WK481.map(wn=>{
+    const [nom,ico,col,txt]=modal481(wn);
+    const u=CUTS.map(c=>unidades(c,wn));
+    const sets=Math.min(...u);            // R&L = corte mas limitante (compensado)
+    const comp=Math.round(sets*SETKG);
+    u.forEach((v,i)=>totU[i]+=v); totComp+=comp; totSets+=sets;
+    return `<tr style="border-bottom:1px solid #eef2f6">
+      <td style="padding:7px 8px;font-weight:700;color:#1a2a3a">W${wn}</td>
+      <td style="padding:7px 8px"><span style="display:inline-block;padding:2px 9px;border-radius:11px;background:${col};color:${txt};font-size:10px;font-weight:700">${ico} ${nom}</span></td>
+      <td style="padding:7px 8px;text-align:right;color:#555">${fmt(u[0])}</td>
+      <td style="padding:7px 8px;text-align:right;color:#555">${fmt(u[1])}</td>
+      <td style="padding:7px 8px;text-align:right;color:#555">${fmt(u[2])}</td>
+      <td style="padding:7px 8px;text-align:right;font-weight:700;color:#1a2a3a">${fmt(sets)}</td>
+      <td style="padding:7px 8px;text-align:right;font-weight:800;color:#1a5276">${fmt(comp)} kg</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('main').innerHTML=`
+    <div class="kr">
+      <div class="kpi"><div class="kn" style="color:#27ae60">🚢 W31-33</div><div class="kl">Marítimo 481</div></div>
+      <div class="kpi"><div class="kn" style="color:#c9a227">✈️ W34-38</div><div class="kl">Aéreo 481</div></div>
+      <div class="kpi"><div class="kn" style="color:#1a5276">${fmt(totSets)}${UUN}</div><div class="kl">R&L sets totales</div></div>
+      <div class="kpi"><div class="kn" style="color:#1a5276">${kK(totComp)}${UKG}</div><div class="kl">R&L 481 compensado</div></div>
+    </div>
+    <div style="background:#f8fafc;border:1px solid #e1e8ef;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:#555;line-height:1.5">
+      <b style="color:#1a2a3a">Regla 481.</b> Modalidad por semana: <b>W31-33 Marítimo</b>, <b>W34-38 Aéreo</b>, resto <b>Full Levy</b>.
+      Un <b>R&L</b> necesita una unidad de cada corte, así que las unidades se <b>compensan</b>: se toma el <b>corte más limitante</b> (el de menor saldo en unidades) entre Bife Angosto, Lomo y Corazón de Cuadril de <b>R&L W</b>. <b>R&L 481 compensado (kg)</b> = unidades del corte limitante × <b>${SETKG} kg</b> (peso de un set de los tres cortes). Unidades = saldo en kg ÷ kg por unidad.
+    </div>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead>
+        <tr style="background:#1a3a5c;color:#fff;text-align:left">
+          <th style="padding:8px">Sem</th><th style="padding:8px">Modalidad</th>
+          <th style="padding:8px;text-align:right">U. Angosto</th>
+          <th style="padding:8px;text-align:right">U. Lomo</th>
+          <th style="padding:8px;text-align:right">U. Cor. Cuadril</th>
+          <th style="padding:8px;text-align:right">R&L (mín.)</th>
+          <th style="padding:8px;text-align:right">R&L 481 comp.</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:#eef3f8;font-weight:800;color:#1a2a3a;border-top:2px solid #1a5276">
+          <td style="padding:8px" colspan="2">TOTAL W25-W44</td>
+          <td style="padding:8px;text-align:right">${fmt(totU[0])}</td>
+          <td style="padding:8px;text-align:right">${fmt(totU[1])}</td>
+          <td style="padding:8px;text-align:right">${fmt(totU[2])}</td>
+          <td style="padding:8px;text-align:right">${fmt(totSets)}</td>
+          <td style="padding:8px;text-align:right;color:#1a5276">${fmt(totComp)} kg</td>
+        </tr>
+      </tfoot>
+    </table>
+    </div>`;
+}
+/* ===== Pestaña Cuota USA (carga manual, se actualiza los lunes con el print) ===== */
+function setCuotaUSA(){ mode='usa'; curGenIdx=-1; curCliIdx=-1; openGenKey=''; srch=''; const si=document.getElementById('ssi'); if(si) si.value=''; renderNav(); renderMBF(); renderSb(); renderMain(); }
+function calcUSA(){
+  const P=id=>parseInt((document.getElementById(id).value||'').replace(/[^\d]/g,''))||0;
+  const asig=P('u_asig'),certif=P('u_certif'),cp=P('u_cargpend'),orl=P('u_orleans'),cua=P('u_cuadriles'),wc=P('u_wc');
+  const saldo=asig-certif, saldoHoy=saldo-cp, cwc=saldoHoy-orl-cua-wc;
+  const pc=asig>0?certif/asig*100:0, ps=asig>0?saldo/asig*100:0;
+  const pf=n=>n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+  const nf=n=>Math.round(n).toLocaleString('es-AR');
+  document.getElementById('u_saldo').textContent=nf(saldo);
+  document.getElementById('u_pctC').textContent=pf(pc);
+  document.getElementById('u_pctS').textContent=pf(ps);
+  document.getElementById('u_saldohoy').textContent=nf(saldoHoy);
+  document.getElementById('u_cwc').textContent=nf(cwc);
+  document.getElementById('u_fecha2').textContent=document.getElementById('u_fecha').value;
+}
+function renderCuotaUSA(){
+  const c=CUOTA_USA, Y='#d9d92b', G='#c3cdc1', R='#c0392b', CWC='#c9d2cf';
+  const nf=n=>Math.round(n).toLocaleString('es-AR');
+  const IST="background:transparent;border:none;border-bottom:1px dashed #9aa;font:inherit;font-weight:800;color:inherit;width:120px;text-align:right;outline:none;padding:0";
+  const inp=(id,val)=>`<input id="${id}" value="${nf(val)}" oninput="calcUSA()" inputmode="numeric" style="${IST}">`;
+  document.getElementById('main').innerHTML=`
+    <div style="max-width:580px">
+      <div style="font-size:15px;font-weight:800;color:#1a2a3a;margin-bottom:2px">🇺🇸 Cálculo Cuota USA</div>
+      <div style="font-size:11px;color:#888;margin-bottom:14px">Carga manual — se actualiza los lunes. Podés editar cualquier número y se recalcula solo (los cambios no se guardan al recargar; la versión oficial se actualiza con el print).</div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;border-radius:6px;overflow:hidden">
+        <tr style="background:${Y}">
+          <td style="width:88px"></td>
+          <td style="text-align:right;padding:9px 12px;font-size:17px">${inp('u_asig',c.asignada)}</td>
+          <td style="padding:9px 12px;font-weight:800;color:#1a2a3a">Cuota USA ASIGNADA</td>
+        </tr>
+        <tr style="background:${G}">
+          <td style="text-align:center;padding:9px 12px;font-weight:800;color:#1a2a3a"><span id="u_pctC"></span></td>
+          <td style="text-align:right;padding:9px 12px">${inp('u_certif',c.certif)}</td>
+          <td style="padding:9px 12px;font-weight:700;color:#1a2a3a">Certif hasta el <input id="u_fecha" value="${c.fecha}" oninput="calcUSA()" style="background:transparent;border:none;border-bottom:1px dashed #9aa;font:inherit;font-weight:700;width:58px;text-align:center;outline:none"></td>
+        </tr>
+        <tr style="background:${Y}">
+          <td style="text-align:center;padding:9px 12px;font-weight:800;color:${R}"><span id="u_pctS"></span></td>
+          <td style="text-align:right;padding:9px 12px;font-weight:800;color:${R};font-size:16px"><span id="u_saldo"></span></td>
+          <td style="padding:9px 12px;font-weight:800;color:${R}">SALDO AL <span id="u_fecha2"></span></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td style="text-align:right;padding:9px 12px">${inp('u_cargpend',c.cargado_pend)}</td>
+          <td style="padding:9px 12px;color:#1a2a3a"><span style="color:${R}">▸</span> Cargado pend de certif</td>
+        </tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:20px">
+        <tr><td style="padding:7px 12px;font-weight:700;color:#1a2a3a;width:62%">Saldo a hoy</td>
+            <td style="text-align:right;padding:7px 12px;font-weight:800;font-size:15px"><span id="u_saldohoy"></span></td></tr>
+        <tr><td style="padding:7px 12px;font-weight:700;color:#1a2a3a">Orleans VENDIDO</td>
+            <td style="text-align:right;padding:7px 12px;color:${R};font-weight:700">- ${inp('u_orleans',c.orleans_vendido)}</td></tr>
+        <tr><td style="padding:7px 12px;font-weight:700;color:#1a2a3a">Cuadriles VENDIDO</td>
+            <td style="text-align:right;padding:7px 12px;color:${R};font-weight:700">- ${inp('u_cuadriles',c.cuadriles_vendido)}</td></tr>
+        <tr style="border-bottom:2px solid #1a2a3a"><td style="padding:7px 12px;font-weight:700;color:#1a2a3a">WC Proyectado por mail</td>
+            <td style="text-align:right;padding:7px 12px;color:${R};font-weight:700">- ${inp('u_wc',c.wc_proyectado)}</td></tr>
+        <tr style="background:${CWC}"><td style="padding:11px 12px;font-weight:800;font-size:15px;color:#1a2a3a">Saldo C/WC</td>
+            <td style="text-align:right;padding:11px 12px;font-weight:800;font-size:17px;color:#1a2a3a"><span id="u_cwc"></span></td></tr>
+      </table>
+    </div>`;
+  calcUSA();
+}
+/* ===== Solapa "Falta vender" (macro para direccion) ===== */
+function setFalta(){ mode='falta'; faltaSol='Todas'; curGenIdx=-1; curCliIdx=-1; openGenKey=''; srch=''; const si=document.getElementById('ssi'); if(si) si.value=''; renderNav(); renderMBF(); renderSb(); renderMain(); }
+function setFaltaFrom(w){ faltaFrom=w; renderFalta(); }
+function setFaltaSol(s){ faltaSol=s; faltaGen=null; renderFalta(); }
+function selectFaltaGen(i){ faltaGen=(faltaSol!=='Todas'&&SOL[faltaSol])?SOL[faltaSol].go[i]:null; renderFalta(); }
+function toggleFaltaRes(){ faltaRes=!faltaRes; renderFalta(); }
+function setFaltaPieType(t){ faltaPieType=t; renderFalta(); }
+function setFaltaPieWeek(v){ faltaPieWeek = (v==='all')?null:parseInt(v); renderFalta(); }
+// Torta: vendido por cliente/destino (pool = venta real; reservas opcionales) en la ventana visible
+function pieVendido(cuts, weeks, mode){
+  const buckets={};
+  for(const {sol,cut} of cuts){ const gd=SOL[sol]&&SOL[sol].g[cut]; if(!gd) continue;
+    for(const w of weeks){ const wd=gd.w['W'+w]; if(!wd) continue;
+      for(const e of wd.e){
+        const isVenta=(e.t==='V'||e.t==='C');           // pool = venta real
+        if(mode==='V' && !isVenta) continue;
+        if(mode==='R' && e.t!=='R') continue;            // mode 'T' => todo
+        let label, flag=e.f||'';
+        if(e.t==='C'){ label=(e.c||e.p||'Pool'); }
+        else if(e.t==='R'){ label=(e.c||e.p||'Reserva')+(mode==='T'?' · reserva':''); }
+        else { label=(e.c||e.p||'Sin cliente'); }
+        const k=label+'|'+e.t;
+        if(!buckets[k]) buckets[k]={label,flag,t:e.t,kg:0};
+        buckets[k].kg+=e.kg;
+      }
+    }
+  }
+  return Object.values(buckets).filter(b=>b.kg>0).sort((a,b)=>b.kg-a.kg);
+}
+function ventasShare(items, color){
+  const tot=items.reduce((a,b)=>a+b.kg,0);
+  if(tot<=0) return {tot:0, strip:'', rows:'<div style="color:#aaa;font-size:12px;padding:18px 0;text-align:center">Sin ventas registradas<br>para este corte en la ventana</div>'};
+  // top 8 + "otros"
+  let list=items; if(items.length>8){ const top=items.slice(0,8); const restKg=items.slice(8).reduce((a,b)=>a+b.kg,0); list=[...top,{label:'Otros ('+(items.length-8)+')',flag:'',t:'V',kg:restKg,otros:true}]; }
+  const op=i=>Math.max(0.32, 1 - i*0.12);
+  const strip = list.map((b,i)=>{const pct=b.kg/tot*100; return `<div title="${b.label}: ${fmtT(b.kg)} t" style="width:${pct.toFixed(2)}%;background:${color};opacity:${op(i)}"></div>`;}).join('');
+  const rows = list.map((b,i)=>{const pct=b.kg/tot*100; const pr=pct>=1?Math.round(pct):pct.toFixed(1); const tn=fmtT(b.kg);
+    const nm = b.otros?`<span style="color:#999;font-style:italic">${b.label}</span>`:`${b.flag?fe(b.flag)+' ':''}${b.label}${b.t==='R'?' <span style="color:#e67e22;font-size:8px;font-weight:800">RES</span>':''}`;
+    return `<div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px;align-items:baseline">
+        <span style="font-size:11px;font-weight:600;color:#1a2a3a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">${nm}</span>
+        <span style="font-size:11px;font-weight:800;color:#1a2a3a;white-space:nowrap">${tn}<span style="font-size:9px;color:#999;font-weight:600"> t</span> · ${pr}%</span>
+      </div>
+      <div style="height:6px;background:#eef2f6;border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct.toFixed(2)}%;background:${color};opacity:${op(i)};border-radius:4px"></div></div>
+    </div>`;}).join('');
+  return {tot, strip:`<div style="display:flex;height:9px;border-radius:5px;overflow:hidden;margin-bottom:14px;background:#eef2f6">${strip}</div>`, rows};
+}
+function saldoCol(asign,p){ if(p<=0) return asign>0?CV:CN_; const pct=asign/p; if(pct>=0.95)return CV; if(pct>=0.70)return CPART; if(pct>=0.40)return CNF; return CN_; }
+function irAFalta(i){ const r=faltaRank[i]; if(!r) return; mode='sol'; curSol=r.sol; mbF='both'; const idx=SOL[r.sol].go.indexOf(r.cut); renderNav(); renderMBF(); curGenIdx=idx; renderSb(); renderMain(); }
+function renderFalta(){
+  const wStart=Math.max(WK[0],curWeek());
+  const wEnd=Math.min(WK[WK.length-1],wStart+FALTA_SPAN-1);
+  const WKf=WK.filter(w=>w>=Math.max(faltaFrom,wStart)&&w<=wEnd);
+  const ALL=Object.keys(SOL);
+  const solsView = faltaSol==='Todas' ? ALL : [faltaSol];
+  const porGen = faltaSol!=='Todas';
+  // colocado: si faltaRes está apagado, la reserva NO cuenta como colocado (pasa a falta)
+  const asignOf = wd => wd.e.reduce((a,e)=>a+((e.t==='R'&&!faltaRes)?0:e.kg),0);
+
+  // KPIs + ranking (alcance segun solapa elegida)
+  let TP=0, TF=0; faltaRank=[];
+  for(const sol of solsView){ for(const cut of SOL[sol].go){ const gd=SOL[sol].g[cut];
+    for(const w of WKf){ const wd=gd.w['W'+w]; if(!wd) continue;
+      const asign=asignOf(wd); const saldo=Math.max(0,wd.p-asign);
+      TP+=wd.p; TF+=saldo;
+      if(saldo>0) faltaRank.push({sol,cut,w,saldo,p:wd.p,asign});
+    }}}
+  faltaRank.sort((x,y)=>y.saldo-x.saldo);
+  const TC=TP-TF, pf=TP>0?Math.round(TF/TP*100):0;
+
+  // corte seleccionado para la torta (por defecto, el más vendido de la solapa)
+  if(porGen){
+    if(!SOL[faltaSol].go.includes(faltaGen)){
+      let best=SOL[faltaSol].go[0], bestKg=-1;
+      for(const cut of SOL[faltaSol].go){ let k=0; for(const w of WKf){const wd=SOL[faltaSol].g[cut].w['W'+w]; if(wd) k+=wd.e.reduce((a,e)=>a+(e.t!=='R'?e.kg:0),0);} if(k>bestKg){bestKg=k;best=cut;} }
+      faltaGen=best;
+    }
+  } else { faltaGen=null; }
+
+  // filas de la grilla: por solapa (Todas) o por generico (solapa elegida)
+  const rows=[];
+  if(porGen){
+    const sol=faltaSol;
+    SOL[sol].go.forEach((cut,ci)=>{ const per={};
+      for(const w of WKf){ const wd=SOL[sol].g[cut].w['W'+w]; if(!wd) continue; const asign=asignOf(wd); per[w]={p:wd.p,asign}; }
+      rows.push({label:cut.replace(/^G /,'').replace('__MB2',' MB2'), badge:SC[sol]||'#555', per, onclick:`selectFaltaGen(${ci})`, sel:cut===faltaGen});
+    });
+  } else {
+    for(const sol of ALL){ const per={};
+      for(const cut of SOL[sol].go) for(const w of WKf){ const wd=SOL[sol].g[cut].w['W'+w]; if(!wd) continue; const asign=asignOf(wd); const x=per[w]||(per[w]={p:0,asign:0}); x.p+=wd.p; x.asign+=asign; }
+      rows.push({label:sol, badge:SC[sol]||'#555', per, onclick:`setFaltaSol('${sol}')`, sel:false});
+    }
+  }
+
+  const head=`<th style="width:1%;padding:5px 6px;text-align:left;font-size:10px;color:#fff;white-space:nowrap">${porGen?'Corte':'Solapa'}</th>`+WKf.map(w=>`<th style="padding:5px 4px;font-size:10px;color:#fff;text-align:center">${w}</th>`).join('');
+  const body=rows.map(r=>{
+    const cells=WKf.map(w=>{const a=r.per[w]; if(!a||a.p<=0) return `<td style="padding:0"><div style="height:24px;background:#eef2f6;border-radius:3px;margin:1px"></div></td>`;
+      const saldo=Math.max(0,a.p-a.asign); const col=saldoCol(a.asign,a.p); const txt=col===CPART?'#1a2a3a':'#fff';
+      const lbl=saldo>0?fmtT(saldo):''; const pctF=Math.round(saldo/a.p*100);
+      return `<td style="padding:1px"><div title="W${w} — falta ${fmt(saldo)} kg (${pctF}%)" style="height:24px;background:${col};color:${txt};border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">${lbl}</div></td>`;
+    }).join('');
+    const selBg=r.sel?'background:#fdecea;':'';
+    const lblTd=`<td style="${selBg}width:1%;padding:3px 6px;font-weight:700;font-size:11px;color:#1a2a3a;white-space:nowrap"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${r.badge};margin-right:5px"></span>${r.sel?'▸ ':''}${r.label}</td>`;
+    return `<tr onclick="${r.onclick}" style="cursor:pointer;${selBg}">${lblTd}${cells}</tr>`;
+  }).join('');
+
+  const top=faltaRank.slice(0,30);
+  const rk=top.map((r,i)=>{const pctF=Math.round(r.saldo/r.p*100); const col=saldoCol(r.asign,r.p);
+    return `<tr onclick="irAFalta(${i})" style="cursor:pointer;border-bottom:1px solid #eef2f6" onmouseover="this.style.background='#f6f9fc'" onmouseout="this.style.background=''">
+      <td style="padding:6px 8px;color:#aaa;font-weight:700;font-size:11px">${i+1}</td>
+      <td style="padding:6px 8px"><span style="font-size:9px;font-weight:700;padding:1px 7px;border-radius:9px;background:${SC[r.sol]||'#555'};color:#fff">${r.sol}</span></td>
+      <td style="padding:6px 8px;font-weight:600;color:#1a2a3a">${r.cut.replace(/^G /,'').replace('__MB2',' MB2')}</td>
+      <td style="padding:6px 8px;font-weight:700;color:#888">W${r.w}</td>
+      <td style="padding:6px 8px;text-align:right;font-weight:800;color:#1a2a3a">${fmt(r.saldo)} <span style="font-size:9px;color:#999;font-weight:600">kg</span></td>
+      <td style="padding:6px 8px;text-align:right"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${col};margin-right:5px;vertical-align:middle"></span><b style="color:#c0392b">${pctF}%</b></td>
+    </tr>`;
+  }).join('');
+
+  const chipW=(w,lbl)=>`<button onclick="setFaltaFrom(${w})" style="padding:3px 11px;border-radius:14px;border:1px solid ${faltaFrom===w?'#c0392b':'#c8d8e8'};background:${faltaFrom===w?'#c0392b':'#fff'};color:${faltaFrom===w?'#fff':'#666'};font-size:11px;font-weight:600;cursor:pointer">${lbl}</button>`;
+  const chipS=(sol)=>`<button onclick="setFaltaSol('${sol}')" style="padding:3px 11px;border-radius:14px;border:1px solid ${faltaSol===sol?(SC[sol]||'#1a3a5c'):'#c8d8e8'};background:${faltaSol===sol?(SC[sol]||'#1a3a5c'):'#fff'};color:${faltaSol===sol?'#fff':'#666'};font-size:11px;font-weight:600;cursor:pointer">${sol==='Todas'?'Todas':sol}</button>`;
+
+  // ----- Panel: vendido por cliente/destino del corte elegido -----
+  if(faltaPieWeek && !WKf.includes(faltaPieWeek)) faltaPieWeek=null;   // semana fuera de la ventana
+  const pieWeeks = faltaPieWeek ? [faltaPieWeek] : WKf;
+  const pieCuts = porGen ? [{sol:faltaSol, cut:faltaGen}] : ALL.flatMap(s=>SOL[s].go.map(c=>({sol:s,cut:c})));
+  const pieItems = pieVendido(pieCuts, pieWeeks, faltaPieType);
+  const pieTitle = porGen ? (faltaGen||'').replace(/^G /,'').replace('__MB2',' MB2') : 'Todas las solapas';
+  const solColor = (porGen && SC[faltaSol]) ? SC[faltaSol] : '#1a5276';
+  const sh = ventasShare(pieItems, solColor);
+  const wkLabel = faltaPieWeek ? ('W'+faltaPieWeek) : ('W'+wStart+'–W'+wEnd);
+  const tChip=(t,lbl)=>`<button onclick="setFaltaPieType('${t}')" style="flex:1;padding:5px 4px;border:1px solid ${faltaPieType===t?solColor:'#d8e0e8'};background:${faltaPieType===t?solColor:'#fff'};color:${faltaPieType===t?'#fff':'#888'};font-size:10px;font-weight:700;cursor:pointer">${lbl}</button>`;
+  const typeSel=`<div style="display:flex;border-radius:8px;overflow:hidden;margin-bottom:8px">${tChip('V','Ventas')}${tChip('R','Reservas')}${tChip('T','Todo')}</div>`;
+  const weekSel=`<select onchange="setFaltaPieWeek(this.value)" style="width:100%;font-size:11px;padding:5px 7px;border:1px solid #d8e0e8;border-radius:8px;background:#fff;color:#1a2a3a;margin-bottom:13px;cursor:pointer">
+      <option value="all" ${!faltaPieWeek?'selected':''}>Todas las semanas (${'W'+wStart}–W${wEnd})</option>
+      ${WKf.map(w=>`<option value="${w}" ${faltaPieWeek===w?'selected':''}>Semana W${w}</option>`).join('')}
+    </select>`;
+  const piePanel = `
+    <div style="flex:0 0 26%;min-width:230px;background:#fff;border:1px solid #e1e8ef;border-radius:11px;padding:14px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <div style="font-size:9px;font-weight:800;letter-spacing:1px;color:#aaa;text-transform:uppercase;margin-bottom:5px">${faltaPieType==='R'?'Reservado':faltaPieType==='T'?'Colocado':'Vendido'} por cliente</div>
+      <div style="font-size:13px;font-weight:800;color:${solColor};line-height:1.2;margin-bottom:10px">${pieTitle}</div>
+      ${typeSel}${weekSel}
+      <div style="display:flex;align-items:baseline;gap:5px;margin-bottom:12px"><span style="font-size:26px;font-weight:800;color:#1a2a3a;line-height:1">${fmtT(sh.tot)}</span><span style="font-size:10px;color:#999">ton · ${wkLabel}</span></div>
+      ${sh.strip}${sh.rows}
+    </div>`;
+
+  document.getElementById('main').innerHTML=`
+    <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1 1 68%;min-width:340px">
+        <div style="display:flex;gap:5px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+          <span style="font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-right:2px">Solapa</span>
+          ${['Todas','PECHO','RUEDA','ASADO','R&L W','R&L HILTON'].map(chipS).join('')}
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+          <span style="font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-right:2px">Desde semana</span>
+          ${chipW(wStart,'Todas')}${chipW(wStart+3,'≥ W'+(wStart+3))}${chipW(wStart+6,'≥ W'+(wStart+6))}
+          <span style="font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:0 2px 0 14px">Reservas</span>
+          <button onclick="toggleFaltaRes()" style="padding:4px 13px;border-radius:14px;border:1px solid ${faltaRes?'#e67e22':'#c8d8e8'};background:${faltaRes?'#e67e22':'#fff'};color:${faltaRes?'#fff':'#666'};font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">${faltaRes?'✓ contadas como colocado':'no contar (mostrar como falta)'}</button>
+        </div>
+        <div class="sc">Mapa de huecos — falta vender ${porGen?'por corte':'por solapa'} y semana${porGen?' · '+faltaSol:''} · <span style="color:#c0392b">W${wStart}–W${wEnd}</span></div>
+        <div style="font-size:10px;color:#888;margin:-4px 0 8px;line-height:1.4"><span style="color:#c0392b;font-weight:700">Valores en TONELADAS (miles de kg).</span> \"Falta vender\" = producción − (venta + pool${faltaRes?' + <b>reserva</b>); la <b>reserva se cuenta como colocada</b>.':'); las <b>reservas NO se cuentan</b> (aparecen como falta).'}</div>
+        <div style="overflow-x:auto;margin-bottom:18px"><table style="border-collapse:collapse;width:100%"><thead><tr style="background:#1a3a5c">${head}</tr></thead><tbody>${body}</tbody></table></div>
+        <div class="sc">🎯 Lo más urgente — corte + semana con más kg sin colocar (clic para ir al detalle)</div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="background:#f4f6f9;color:#888;text-transform:uppercase;font-size:10px"><th style="padding:6px 8px;text-align:left">#</th><th style="padding:6px 8px;text-align:left">Solapa</th><th style="padding:6px 8px;text-align:left">Corte</th><th style="padding:6px 8px;text-align:left">Sem</th><th style="padding:6px 8px;text-align:right">Falta</th><th style="padding:6px 8px;text-align:right">% falta</th></tr></thead>
+          <tbody>${rk||'<tr><td colspan="6" style="padding:14px;text-align:center;color:#27ae60;font-weight:600">✓ No hay saldo sin colocar en este rango</td></tr>'}</tbody>
+        </table>
+      </div>
+      ${piePanel}
+    </div>`;
+}
+function onSrch(){const el=document.getElementById('ssi');if(!el)return;srch=el.value.toLowerCase();renderSb();}
+
+function syncHdrWeeks(){const el=document.getElementById('hdr-weeks');if(!el)return;const wS=Math.max(WK[0],curWeek());const wE=Math.min(WK[WK.length-1],wS+FALTA_SPAN-1);el.textContent=`W${wS}→W${wE}`;}
+mode='falta';
+syncHdrWeeks();
+renderNav();renderMBF();renderSb();renderMain();
+</script>
+</body>
+</html>
