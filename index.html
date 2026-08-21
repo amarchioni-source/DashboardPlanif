@@ -118,8 +118,80 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   .hdr p{display:none}
 }
 </style>
+
+<style id="login-overlay-style">
+#login-overlay{position:fixed;inset:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;z-index:99999}
+#login-box{background:#fff;border-radius:16px;padding:40px 36px;width:320px;box-shadow:0 8px 40px rgba(0,0,0,.4);text-align:center}
+#login-box h2{font-size:17px;font-weight:800;color:#1a2a3a;margin-bottom:4px}
+#login-box p{font-size:12px;color:#888;margin-bottom:24px}
+#login-pwd{width:100%;padding:10px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;outline:none;box-sizing:border-box;margin-bottom:12px;text-align:center;letter-spacing:2px}
+#login-pwd:focus{border-color:#1a5276}
+#login-btn{width:100%;padding:11px;background:#1a5276;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+#login-btn:hover{background:#154360}
+#login-err{color:#c0392b;font-size:12px;margin-top:8px;min-height:18px}
+</style>
 </head>
 <body>
+<div id="login-overlay">
+  <div id="login-box">
+    <h2>ANB · Planificación</h2>
+    <p>Ingresá la contraseña para continuar</p>
+    <input id="login-pwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')chkLogin()">
+    <button id="login-btn" onclick="chkLogin()">Ingresar</button>
+    <div id="login-err"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var BLOCK_KEY='anb_block_until', TRIES_KEY='anb_tries';
+  function isBlocked(){return Date.now()<parseInt(localStorage.getItem(BLOCK_KEY)||'0');}
+  function blockMin(){return Math.ceil((parseInt(localStorage.getItem(BLOCK_KEY)||'0')-Date.now())/60000);}
+  function showErr(msg){document.getElementById('login-err').textContent=msg;}
+  function checkBlock(){
+    if(isBlocked()){
+      document.getElementById('login-pwd').disabled=true;
+      document.getElementById('login-btn').disabled=true;
+      showErr('Bloqueado. Intentá en '+blockMin()+' min.');
+      setTimeout(checkBlock,10000);
+    } else {
+      document.getElementById('login-pwd').disabled=false;
+      document.getElementById('login-btn').disabled=false;
+      showErr('');
+      localStorage.removeItem(BLOCK_KEY);
+      localStorage.removeItem(TRIES_KEY);
+    }
+  }
+  window.chkLogin=function(){
+    if(isBlocked()){checkBlock();return;}
+    var v=document.getElementById('login-pwd').value;
+    if(v==='ANB16'){
+      localStorage.removeItem(BLOCK_KEY);localStorage.removeItem(TRIES_KEY);
+      document.getElementById('login-overlay').style.display='none';
+      sessionStorage.setItem('anb_auth','1');
+    } else {
+      var tries=parseInt(localStorage.getItem(TRIES_KEY)||'0')+1;
+      localStorage.setItem(TRIES_KEY,tries);
+      document.getElementById('login-pwd').value='';
+      document.getElementById('login-pwd').focus();
+      if(tries>=3){
+        localStorage.setItem(BLOCK_KEY,Date.now()+20*60*1000);
+        localStorage.setItem(TRIES_KEY,'0');
+        checkBlock();
+      } else {
+        showErr('Contraseña incorrecta. Intentos restantes: '+(3-tries));
+      }
+    }
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    if(sessionStorage.getItem('anb_auth')==='1'){
+      var o=document.getElementById('login-overlay');
+      if(o) o.style.display='none';
+    } else if(isBlocked()){
+      checkBlock();
+    }
+  });
+})();
+</script>
 <div class="hdr">
   <h1>ANB · Planificación</h1>
   <p id="hdr-sub">Solapas &nbsp;·&nbsp; Clientes &nbsp;·&nbsp; <span id="hdr-weeks">—</span></p>
